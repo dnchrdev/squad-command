@@ -1,19 +1,21 @@
-﻿using System;
-using Feature.Command.Application.Interfaces;
+﻿using Feature.Command.Application.Interfaces;
+using Feature.Shared.DevTools;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Feature.Command.Adapter
 {
-    public class SelectRectView: MonoBehaviour, ISelectRectView
+    public class SelectRectView : MonoBehaviour, ISelectRectView
     {
         [SerializeField] private Image _selectionImage;
 
-        private void Awake()
+        private void OnValidate()
         {
-            if(_selectionImage ==  null)
-                throw new NullReferenceException("SectionImage is null");
-            
+            InspectorRefValidator.CheckAssigned(_selectionImage, nameof(_selectionImage), this);
+        }
+
+        public void Initialize()
+        {
             Hide();
         }
 
@@ -26,9 +28,9 @@ namespace Feature.Command.Adapter
         {
             _selectionImage.gameObject.SetActive(false);
         }
-        
-        
-        public void UpdateSelectionRect(Rect  selectionRect)
+
+
+        public void UpdateSelectionRect(Rect selectionRect)
         {
             _selectionImage.rectTransform.position = selectionRect.position;
             _selectionImage.rectTransform.sizeDelta = new Vector2(selectionRect.width, selectionRect.height);

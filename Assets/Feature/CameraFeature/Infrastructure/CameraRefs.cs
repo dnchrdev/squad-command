@@ -1,4 +1,5 @@
 using System;
+using Feature.Shared.DevTools;
 using UnityEngine;
 
 namespace Feature.CameraFeature.Infrastructure
@@ -11,9 +12,9 @@ namespace Feature.CameraFeature.Infrastructure
 
         private void OnValidate()
         {
-            if(PositionRoot == null) throw  new NullReferenceException("PositionRoot is null");
-            if(RotationRoot == null) throw new NullReferenceException("RotationRoot is null");
-            if(BoomRoot == null) throw  new NullReferenceException("BoomRoot is null");
+            InspectorRefValidator.CheckAssigned(PositionRoot, nameof(PositionRoot), this);
+            InspectorRefValidator.CheckAssigned(RotationRoot, nameof(RotationRoot), this);
+            InspectorRefValidator.CheckAssigned(BoomRoot, nameof(BoomRoot), this);
         }
     }
 }

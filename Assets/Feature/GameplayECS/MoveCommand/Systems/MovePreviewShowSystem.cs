@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Feature.GameplayECS.MoveCommand.Systems
 {
-  public class MovePreviewShowSystem : ISystem
+    public class MovePreviewShowSystem : ISystem
     {
         public World World { get; set; }
 
@@ -71,10 +71,9 @@ namespace Feature.GameplayECS.MoveCommand.Systems
                 return;
 
             int selectedUnitsCount = CountSelectedUnits();
-            Debug.Log($"OnUpdate: hasRequest={hasRequest}, selectedCount={selectedUnitsCount}");
             if (selectedUnitsCount <= 0)
                 return;
-            
+
             ApplyRequest(lastRequest, selectedUnitsCount);
         }
 
@@ -88,8 +87,6 @@ namespace Feature.GameplayECS.MoveCommand.Systems
 
         private void ApplyRequest(in MovePreviewRequest request, int unitsCount)
         {
-            Debug.Log($"ApplyRequest: forward={request.FormationForward}");
-            
             GenerateAdaptiveGrid(
                 unitsCount,
                 request.Center,

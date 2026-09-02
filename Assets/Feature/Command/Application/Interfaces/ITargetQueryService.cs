@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using Vector2 = UnityEngine.Vector2;
 
 namespace Feature.Command.Application.Interfaces
 {

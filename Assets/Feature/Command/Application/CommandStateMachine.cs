@@ -1,5 +1,5 @@
-﻿using Feature.Command.Application.CommandModes;
-using Feature.Command.Application.CommandModes.Interfaces;
+﻿using Feature.Command.Application.CommandStates;
+using Feature.Command.Application.CommandStates.Interfaces;
 using Zenject;
 
 namespace Feature.Command.Application
@@ -12,6 +12,8 @@ namespace Feature.Command.Application
 
         private SelectCommandState _select;
         private MoveCommandState _move;
+        
+        //todo
         //private AttackCursorMode _attack;
 
         [Inject]
@@ -19,11 +21,15 @@ namespace Feature.Command.Application
         {
             _select = _container.Instantiate<SelectCommandState>();
             _move = _container.Instantiate<MoveCommandState>();
+            
+            //todo
             //_attack = _container.Instantiate<AttackCursorMode>();
         }
 
-        public void SetSelect() => Switch(_select);
-        public void SetMove() => Switch(_move);
+        public void SetSelectState() => Switch(_select);
+        public void SetMoveState() => Switch(_move);
+        
+        //todo
         //public void SetAttack() => Switch(_attack);
 
         private void Switch(ICommandState next)

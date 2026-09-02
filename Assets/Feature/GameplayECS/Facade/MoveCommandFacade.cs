@@ -35,8 +35,6 @@ namespace Feature.GameplayECS.Facade
 
         public void MovePreviewRequest(Vector2 center, Vector2 size, Vector2 formationForward, Vector2 formationRight)
         {
-            Debug.Log($"MovePreviewRequest: Center = {center} , Size = {size} FormationForward =  {formationForward},FormationRight =  {formationRight }");
-
             var movePreviewRequest = _world.CreateEntity();
 
             _movePreviewRequestStash.Add(movePreviewRequest, new MovePreviewRequest

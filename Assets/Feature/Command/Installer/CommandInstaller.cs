@@ -1,7 +1,7 @@
 ﻿using Feature.Command.Adapter;
 using Feature.Command.Application;
 using Feature.Command.Application.Interfaces;
-using Feature.Command.Infrastructure;
+using Feature.Command.Domain.Services;
 using Feature.Command.Infrastructure.Configs;
 using UnityEngine;
 using Zenject;
@@ -21,9 +21,10 @@ namespace Feature.Command.Installer
             Container.BindInterfacesAndSelfTo<CommandStateMachine>().AsSingle();
 
             // Application
+            Container.Bind<CommandBootstrap>().AsSingle();
             Container.Bind<MovePreviewService>().AsSingle();
-            Container.Bind<CommandButtonVisual>().AsSingle();
-            Container.BindInterfacesAndSelfTo<CommandPresenter>().AsSingle();
+            Container.Bind<CommandButtonsVisual>().AsSingle();
+            Container.BindInterfacesAndSelfTo<CommandInputController>().AsSingle();
 
             //Interface Adapters
             Container.Bind<ICommandView>().To<CommandView>().FromInstance(_commandView).AsSingle();
@@ -36,7 +37,7 @@ namespace Feature.Command.Installer
             Container.Bind<IGroundQueryService>()
                 .To<GroundQueryService>()
                 .AsSingle();
-            
+
             //Infrastructure
             Container.Bind<CommandConfig>().FromInstance(_config).AsSingle();
         }

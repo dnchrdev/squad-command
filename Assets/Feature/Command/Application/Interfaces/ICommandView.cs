@@ -7,14 +7,12 @@ namespace Feature.Command.Application.Interfaces
     {
         Observable<Unit> GetClick(CommandType type);
 
-        public void Initialize();
-        
+        void Initialize();
+
         float GetLowHeight();
         float GetHighHeight();
 
         float GetButtonHeight(CommandType type);
         void SetButtonHeightOffset(CommandType type, float height);
-
-        
     }
 }

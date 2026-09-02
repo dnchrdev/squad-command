@@ -49,7 +49,6 @@ namespace Feature.GameplayECS.MoveCommand.Systems
 
                 var activeSlots = state.ActiveSlots;
                 var lastGrid = state.LastGrid;
-                Debug.Log($"Reposition: dirty={state.GridDirty}, slots={activeSlots.Count}");
 
                 // Переставляем позицию только тех слотов, для которых уже есть
                 // соответствующий индекс в свежей сетке. Слоты за пределами
@@ -69,9 +68,6 @@ namespace Feature.GameplayECS.MoveCommand.Systems
 
         private void RepositionSlot(Entity slotEntity, Vector3 position)
         {
-            Debug.Log(
-                $"Reposition slot: hasPos={_slotPositionStash.Has(slotEntity)}, hasView={_viewStash.Has(slotEntity)}, newPos={position}");
-            
             if (_slotPositionStash.Has(slotEntity))
             {
                 ref var slotPosition = ref _slotPositionStash.Get(slotEntity);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Scellecs.Morpeh;
-using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Rect = UnityEngine.Rect;
 
 namespace Feature.Command.Application.Interfaces
 {

@@ -1,21 +1,18 @@
-﻿using Feature.GameLifecycle.Application.Interfaces;
-using UnityEngine;
+﻿using Feature.CameraFeature.Application;
+using Feature.Command.Application;
 using Zenject;
 
 namespace Feature.GameLifecycle.Application
 {
-    public class GameStartedUseCase: IInitializable
+    public class GameStartedUseCase : IInitializable
     {
-        [Inject] private readonly ICameraPositionReset _cameraPositionReset;
-        [Inject] private readonly ICameraRotationReset  _cameraRotationReset;
-        [Inject] private readonly ICameraBoomReset  _cameraBoomReset;
+        [Inject] private readonly CameraBootstrap _cameraBootstrap;
+        [Inject] private readonly CommandBootstrap _commandBootstrap;
 
         public void Initialize()
         {
-            _cameraPositionReset.SetPosition(Vector3.zero);
-            _cameraRotationReset.SetRotation(Quaternion.identity);
-            _cameraBoomReset.SetDistance(25f);
-            //UnityEngine.Application.targetFrameRate = 30;
+            _cameraBootstrap.GameStarted();
+            _commandBootstrap.GameStarted();
         }
     }
 }

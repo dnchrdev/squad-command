@@ -1,4 +1,5 @@
 ﻿using Feature.CameraFeature.Infrastructure;
+using Feature.CameraFeature.Infrastructure.Interfaces;
 using Feature.Command.Application.Interfaces;
 using Feature.Command.Infrastructure.Configs;
 using UnityEngine;
@@ -6,7 +7,7 @@ using Zenject;
 
 namespace Feature.Command.Adapter
 {
-    public sealed class GroundQueryService : IGroundQueryService
+    public class GroundQueryService : IGroundQueryService
     {
         [Inject] private readonly IReadOnlyCamera _camera;
         [Inject] private readonly CommandConfig _config;
