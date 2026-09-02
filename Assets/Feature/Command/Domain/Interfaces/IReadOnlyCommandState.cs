@@ -4,6 +4,6 @@ namespace Feature.Command.Domain.Interfaces
 {
     public interface IReadOnlyCommandState
     {
-        InputState InputState { get; }
+        CommandType CommandType { get; }
     }
 }

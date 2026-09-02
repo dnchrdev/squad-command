@@ -5,16 +5,23 @@ using UnityEngine;
 
 namespace Feature.GameplayECS.Navigation.Systems
 {
+    /// <summary>
+    /// Считает желаемое направление движения по текущему сегменту пути (Destination.Corners)
+    /// и сразу пишет его в SteeringDirection. LocalAvoidanceSystem убрана из пайплайна —
+    /// коллизии/расталкивание юнитов решаются отдельной системой, поэтому
+    /// NavigationDirection как промежуточный компонент больше не нужен.
+    /// </summary>
     public class CalculateNavigationDirectionSystem : ISystem
     {
+        private const float FINAL_WAYPOINT_TOLERANCE = 0.1f;
+        private const float WAYPOINT_TOLERANCE = 1f;
+        
         public World World { get; set; }
 
         private Filter _filter;
         private Stash<Destination> _destinationStash;
-        private Stash<NavigationDirection> _moveDirectionStash;
         private Stash<Position> _positionStash;
-
-        private const float WaypointTolerance = 0.2f;
+        private Stash<SteeringDirection> _steeringStash;
 
         public void OnAwake()
         {
@@ -25,8 +32,8 @@ namespace Feature.GameplayECS.Navigation.Systems
                 .Build();
 
             _destinationStash = World.GetStash<Destination>();
-            _moveDirectionStash = World.GetStash<NavigationDirection>();
             _positionStash = World.GetStash<Position>();
+            _steeringStash = World.GetStash<SteeringDirection>();
         }
 
         public void OnUpdate(float deltaTime)
@@ -40,11 +47,18 @@ namespace Feature.GameplayECS.Navigation.Systems
 
                 if (TryCalculateDirection(ref destination, currentPosition, out Vector3 direction))
                 {
-                    _moveDirectionStash.Set(entity, new NavigationDirection { Value = direction });
+                    _steeringStash.Set(entity, new SteeringDirection { Value = direction });
                 }
-                else if (_moveDirectionStash.Has(entity))
+                else
                 {
-                    _moveDirectionStash.Remove(entity);
+                    // цель достигнута (или путь невозможен) — явно гасим движение,
+                    // а не оставляем "зависший" вектор в SteeringDirection
+                    if (_steeringStash.Has(entity))
+                        _steeringStash.Set(entity, new SteeringDirection { Value = Vector3.zero });
+
+                    // путь исчерпан — сама Destination больше не нужна
+                    if (_destinationStash.Has(entity))
+                        _destinationStash.Remove(entity);
                 }
             }
         }
@@ -62,7 +76,9 @@ namespace Feature.GameplayECS.Navigation.Systems
             Vector3 toCorner = destination.Corners[destination.CurrentCornerIndex] - currentPosition;
             toCorner.y = 0f;
 
-            if (toCorner.sqrMagnitude < WaypointTolerance * WaypointTolerance)
+            float tolerance = destination.CurrentCornerIndex == destination.Corners.Length - 1 ? FINAL_WAYPOINT_TOLERANCE : WAYPOINT_TOLERANCE;
+            
+            if (toCorner.sqrMagnitude < tolerance * tolerance)
             {
                 destination.CurrentCornerIndex++;
 

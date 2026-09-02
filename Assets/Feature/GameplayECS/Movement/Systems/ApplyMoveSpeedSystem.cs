@@ -12,7 +12,7 @@ namespace Feature.GameplayECS.Movement.Systems
 
         private Stash<Velocity> _velocityStash;
         private Stash<MovementSpeed> _moveSpeedStash;
-        private Stash<NavigationDirection> _navigationDirectionStash;
+        private Stash<SteeringDirection> _steeringDirectionStash;
 
         public void OnAwake()
         {
@@ -20,12 +20,12 @@ namespace Feature.GameplayECS.Movement.Systems
                 .With<UnitTag>()
                 .With<Velocity>()
                 .With<MovementSpeed>()
-                .With<NavigationDirection>()
+                .With<SteeringDirection>()
                 .Build();
 
             _velocityStash = World.GetStash<Velocity>();
             _moveSpeedStash = World.GetStash<MovementSpeed>();
-            _navigationDirectionStash = World.GetStash<NavigationDirection>();
+            _steeringDirectionStash = World.GetStash<SteeringDirection>();
         }
 
         public void OnUpdate(float deltaTime)
@@ -34,9 +34,9 @@ namespace Feature.GameplayECS.Movement.Systems
             {
                 ref var velocity = ref _velocityStash.Get(entity);
                 ref var movementSpeed = ref _moveSpeedStash.Get(entity);
-                ref var navigationDirection = ref _navigationDirectionStash.Get(entity);
+                ref var steeringDirection = ref _steeringDirectionStash.Get(entity);
 
-                velocity.Value += navigationDirection.Value * movementSpeed.Value;
+                velocity.Value += steeringDirection.Value * movementSpeed.Value;
             }
         }
 

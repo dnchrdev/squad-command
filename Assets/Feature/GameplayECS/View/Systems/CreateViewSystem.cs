@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Feature.GameplayECS.Common;
-using Feature.GameplayECS.Infrastructure.UnitFactory;
+using Feature.GameplayECS.Spawning.UnitFactory;
 using Scellecs.Morpeh;
 using UnityEngine;
 

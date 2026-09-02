@@ -1,4 +1,4 @@
-﻿using Feature.GameplayECS.Infrastructure.UnitFactory;
+﻿using Feature.GameplayECS.Spawning.UnitFactory;
 using Scellecs.Morpeh;
 
 namespace Feature.GameplayECS.View.Systems

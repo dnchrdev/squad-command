@@ -1,7 +1,6 @@
 ﻿using Feature.Command.Adapter;
-using Feature.Command.Adapter.Interfaces;
 using Feature.Command.Application;
-using Feature.Command.Domain;
+using Feature.Command.Application.Interfaces;
 using Feature.Command.Infrastructure;
 using Feature.Command.Infrastructure.Configs;
 using UnityEngine;
@@ -13,19 +12,23 @@ namespace Feature.Command.Installer
     {
         [SerializeField] private CommandConfig _config;
         [SerializeField] private SelectRectView _selectRectView;
-        
+        [SerializeField] private MoveVisualView _moveVisualView;
+        [SerializeField] private CommandView _commandView;
+
         public override void InstallBindings()
         {
             //Domain
-            Container.BindInterfacesAndSelfTo<CommandState>().AsSingle();
+            Container.BindInterfacesAndSelfTo<CommandStateMachine>().AsSingle();
 
             // Application
-            Container.Bind<SelectionUseCase>().AsSingle();
-            Container.Bind<MoveSquadUseCase>().AsSingle();
+            Container.Bind<MovePreviewService>().AsSingle();
+            Container.Bind<CommandButtonVisual>().AsSingle();
             Container.BindInterfacesAndSelfTo<CommandPresenter>().AsSingle();
 
-            //Infrastructure
+            //Interface Adapters
+            Container.Bind<ICommandView>().To<CommandView>().FromInstance(_commandView).AsSingle();
             Container.BindInterfacesTo<SelectRectView>().FromInstance(_selectRectView).AsSingle();
+            Container.BindInterfacesTo<MoveVisualView>().FromInstance(_moveVisualView).AsSingle();
             Container.Bind<ISelectionQueryService>()
                 .To<SelectionQueryService>()
                 .AsSingle();
@@ -33,6 +36,8 @@ namespace Feature.Command.Installer
             Container.Bind<IGroundQueryService>()
                 .To<GroundQueryService>()
                 .AsSingle();
+            
+            //Infrastructure
             Container.Bind<CommandConfig>().FromInstance(_config).AsSingle();
         }
     }

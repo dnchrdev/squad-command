@@ -21,7 +21,7 @@ namespace Feature.CameraFeature.Infrastructure.CameraTransfromControllers
         
         public void AddDistance(float zoomValue)
         {
-            _targetDistance += zoomValue * _config.DistanceChangeFactor;
+            _targetDistance -= zoomValue * _config.DistanceChangeFactor;
             _targetDistance = Mathf.Clamp(_targetDistance, _config.MinDistance, _config.MaxDistance);
         }
         

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b004a26128319e14e9cbb6cb55a10561, type: 3}
   m_Name: CameraConfig
   m_EditorClassIdentifier: Assembly-CSharp::CameraConfig
-  <MoveChangeFactor>k__BackingField: 3
+  <MoveChangeFactor>k__BackingField: 0.05
   <MoveSmoothing>k__BackingField: 100
-  <RotationChangeFactor>k__BackingField: 50
+  <RotationChangeFactor>k__BackingField: 0.5
   <MaxPitch>k__BackingField: 60
   <MinPitch>k__BackingField: 60
   <RotationSmoothing>k__BackingField: 100

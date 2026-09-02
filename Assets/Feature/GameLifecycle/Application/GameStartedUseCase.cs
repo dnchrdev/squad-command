@@ -15,6 +15,7 @@ namespace Feature.GameLifecycle.Application
             _cameraPositionReset.SetPosition(Vector3.zero);
             _cameraRotationReset.SetRotation(Quaternion.identity);
             _cameraBoomReset.SetDistance(25f);
+            //UnityEngine.Application.targetFrameRate = 30;
         }
     }
 }

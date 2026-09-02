@@ -1,5 +1,5 @@
 ﻿using Feature.CameraFeature.Adapter.Interfaces;
-using Feature.Input.Infrastructure.Interfaces;
+using Feature.Input.Adapter.Interfaces;
 using R3;
 using UnityEngine;
 using Zenject;

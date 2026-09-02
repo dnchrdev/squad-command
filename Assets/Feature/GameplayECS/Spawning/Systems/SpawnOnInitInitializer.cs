@@ -1,5 +1,7 @@
 ﻿using Feature.GameplayECS.Common;
 using Feature.GameplayECS.Movement;
+using Feature.GameplayECS.Navigation;
+using Feature.GameplayECS.Physics;
 using Feature.GameplayECS.View;
 using Scellecs.Morpeh;
 using UnityEngine;
@@ -16,6 +18,11 @@ namespace Feature.GameplayECS.Spawning.Systems
         private Stash<Position>  _positionStash;
         private Stash<Rotation>   _rotationStash;
         private Stash<Velocity>  _velocityStash;    
+        private Stash<UnitRadius> _unitRadiusStash;
+        private Stash<SteeringDirection> _steeringDirectionStash;
+        private Stash<PhysicsForce> _physicsForceStash;
+        private Stash<CollisionRadius> _collisionRadiusStash;
+        private Stash<PlayerControlledTag> _playerControlledStash;
         
         public void OnAwake()
         {
@@ -25,30 +32,35 @@ namespace Feature.GameplayECS.Spawning.Systems
             _positionStash = World.GetStash<Position>();
             _rotationStash = World.GetStash<Rotation>();    
             _velocityStash = World.GetStash<Velocity>();
-            
-            var unit1 = World.CreateEntity();
-            _unitTagStash.Add(unit1);
-            _movementSpeedStash.Add(unit1, new MovementSpeed{Value = 3.5f});
-            _assetPathStash.Add(unit1, new AssetPath{Value = "Unit"});
-            _positionStash.Add(unit1, new Position {Value = Vector3.zero + Vector3.up * 1 + Vector3.right * 0});
-            _velocityStash.Add(unit1, new Velocity {Value = Vector3.zero});
-            _rotationStash.Add(unit1, new Rotation {Value = Quaternion.identity});
-            
-            var unit2 = World.CreateEntity();
-            _unitTagStash.Add(unit2);
-            _movementSpeedStash.Add(unit2, new MovementSpeed{Value = 3.5f});
-            _assetPathStash.Add(unit2, new AssetPath{Value = "Unit"});
-            _positionStash.Add(unit2, new Position {Value = Vector3.zero + Vector3.up * 1 + Vector3.right * 1});
-            _velocityStash.Add(unit2, new Velocity {Value = Vector3.zero});
-            _rotationStash.Add(unit2, new Rotation {Value = Quaternion.identity});
-            
-            var unit3 = World.CreateEntity();
-            _unitTagStash.Add(unit3);
-            _movementSpeedStash.Add(unit3, new MovementSpeed{Value = 3.5f});
-            _assetPathStash.Add(unit3, new AssetPath{Value = "Unit"});
-            _positionStash.Add(unit3, new Position {Value = Vector3.zero + Vector3.up * 1 + Vector3.right * -1});
-            _velocityStash.Add(unit3, new Velocity {Value = Vector3.zero});
-            _rotationStash.Add(unit3, new Rotation {Value = Quaternion.identity});
+            _unitRadiusStash = World.GetStash<UnitRadius>();
+            _steeringDirectionStash = World.GetStash<SteeringDirection>();
+            _physicsForceStash = World.GetStash<PhysicsForce>();
+            _collisionRadiusStash = World.GetStash<CollisionRadius>();
+            _playerControlledStash = World.GetStash<PlayerControlledTag>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    var unit = World.CreateEntity();
+                    NewUnit(ref unit, Vector3.right * i + Vector3.forward * j);
+                }
+            }
+        }
+
+        private void NewUnit(ref Entity unit, Vector3 position)
+        {
+            _unitTagStash.Add(unit);
+            _movementSpeedStash.Add(unit, new MovementSpeed{Value = 3.5f});
+            _assetPathStash.Add(unit, new AssetPath{Value = "Unit"});
+            _positionStash.Add(unit, new Position {Value = Vector3.zero + Vector3.up * 1 + position});
+            _rotationStash.Add(unit, new Rotation {Value = Quaternion.identity});
+            _velocityStash.Add(unit, new Velocity {Value = Vector3.zero});
+            _unitRadiusStash.Add(unit, new UnitRadius{Value = 0.5f});
+            _steeringDirectionStash.Add(unit, new SteeringDirection {Value = Vector3.zero});
+            _physicsForceStash.Add(unit, new PhysicsForce {Value = Vector3.zero});
+            _collisionRadiusStash.Add(unit, new CollisionRadius {Value = 0.5f});
+            _playerControlledStash.Add(unit);
         }
 
         public void Dispose()

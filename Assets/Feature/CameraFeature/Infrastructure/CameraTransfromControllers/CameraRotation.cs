@@ -23,8 +23,8 @@ namespace Feature.CameraFeature.Infrastructure.CameraTransfromControllers
             var currentYaw = _refs.RotationRoot.transform.eulerAngles.y;
             var currentPitch = _refs.RotationRoot.transform.eulerAngles.x;
             
-            var targetYaw = currentYaw + delta.x * _config.RotationChangeFactor * dt;
-            var targetPitch = currentPitch + -delta.y * _config.RotationChangeFactor * dt;
+            var targetYaw = currentYaw + delta.x * _config.RotationChangeFactor;
+            var targetPitch = currentPitch + -delta.y * _config.RotationChangeFactor;
             
             var currentRotation = _refs.RotationRoot.transform.rotation;
             var targetRotation = Quaternion.Euler(targetPitch, targetYaw, 0f);

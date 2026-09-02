@@ -1,4 +1,4 @@
-﻿using Feature.Input.Infrastructure;
+﻿using Feature.Input.Adapter;
 using Zenject;
 
 namespace Feature.Input.Installer
