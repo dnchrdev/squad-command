@@ -17,25 +17,16 @@ namespace Feature.UI.Adapter
         public Observable<Unit> Up => _onUp;
 
         [SerializeField] private GameObject _pointerHighlight;
-
+        
 
         private void Awake()
         {
             Initialize();
-
-#if UNITY_EDITOR
-            CheckForNull();
-#endif
         }
 
         protected virtual void Initialize()
         {
-        }
-
-        protected virtual void CheckForNull()
-        {
-            if (_pointerHighlight == null)
-                throw new NullReferenceException("Button had null pointer highlight");
+            SetHighlightVisibility(false);
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -50,19 +41,23 @@ namespace Feature.UI.Adapter
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (_pointerHighlight != null)
-                _pointerHighlight?.SetActive(true);
+            SetHighlightVisibility(true);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (_pointerHighlight != null)
-                _pointerHighlight?.SetActive(false);
+            SetHighlightVisibility(false);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             _onUp?.OnNext(Unit.Default);
+        }
+        
+        private void SetHighlightVisibility(bool value)
+        {
+            if (_pointerHighlight != null)
+                _pointerHighlight?.SetActive(value);
         }
     }
 }

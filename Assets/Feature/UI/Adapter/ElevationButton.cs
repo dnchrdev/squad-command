@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Feature.UI.Adapter
 {
@@ -8,11 +7,10 @@ namespace Feature.UI.Adapter
         [SerializeField] private GameObject _greyHover;
         public float CurrentOffsetHeight => transform.position.y;
 
-        protected override void CheckForNull()
+        protected override void Initialize()
         {
-            base.CheckForNull();
-            if (_greyHover == null)
-                throw new NullReferenceException("Button had null grey hover");
+            base.Initialize();
+            HideGreyCover();
         }
 
         public void SetHeight(float height)
@@ -20,14 +18,19 @@ namespace Feature.UI.Adapter
             transform.position = new Vector3(transform.position.x, height, transform.position.z);
         }
 
-        public void ShowGreyHover()
+        public void ShowGreyCover()
         {
-            _greyHover.SetActive(true);
+            SetGreyCoverVisibility(true);
         }
 
-        public void HideGreyHover()
+        public void HideGreyCover()
         {
-            _greyHover.SetActive(false);
+            SetGreyCoverVisibility(false);
+        }
+        private void SetGreyCoverVisibility(bool value)
+        {
+            if (_greyHover == null) return;
+            _greyHover.SetActive(value);
         }
     }
 }
