@@ -4,9 +4,9 @@ namespace Feature.Command.Application.Interfaces
 {
     public interface ISelectRectView
     {
-        public void Show();
-        public void Hide();
-        public void Initialize();
-        public void UpdateSelectionRect(Rect selectionRect);
+        void Initialize();
+        void Show();
+        void Hide();
+        void UpdateSelectionRect(Rect screenRect);
     }
 }

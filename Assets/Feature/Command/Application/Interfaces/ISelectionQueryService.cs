@@ -10,6 +10,5 @@ namespace Feature.Command.Application.Interfaces
         float GetSingleSelectionThreshold();
         IReadOnlyList<Entity> GetUnitAtPoint(Vector2 pointerPosition, float tolerance);
         IReadOnlyList<Entity> QueryUnitsInRect(Rect screenRect);
-        
     }
 }

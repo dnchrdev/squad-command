@@ -14,26 +14,14 @@ namespace Feature.Command.Adapter
             InspectorRefValidator.CheckAssigned(_selectionImage, nameof(_selectionImage), this);
         }
 
-        public void Initialize()
-        {
-            Hide();
-        }
+        public void Initialize() => Hide();
+        public void Show() => _selectionImage.gameObject.SetActive(true);
+        public void Hide() => _selectionImage.gameObject.SetActive(false);
 
-        public void Show()
+        public void UpdateSelectionRect(Rect rect)
         {
-            _selectionImage.gameObject.SetActive(true);
-        }
-
-        public void Hide()
-        {
-            _selectionImage.gameObject.SetActive(false);
-        }
-
-
-        public void UpdateSelectionRect(Rect selectionRect)
-        {
-            _selectionImage.rectTransform.position = selectionRect.position;
-            _selectionImage.rectTransform.sizeDelta = new Vector2(selectionRect.width, selectionRect.height);
+            _selectionImage.rectTransform.position = rect.position;
+            _selectionImage.rectTransform.sizeDelta = new Vector2(rect.width, rect.height);
         }
     }
 }

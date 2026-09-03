@@ -5,13 +5,10 @@ namespace Feature.Command.Application.Interfaces
 {
     public interface ICommandView
     {
-        Observable<Unit> GetClick(CommandType type);
-
         void Initialize();
-
+        Observable<Unit> GetClick(CommandType type);
         float GetLowHeight();
         float GetHighHeight();
-
         float GetButtonHeight(CommandType type);
         void SetButtonHeightOffset(CommandType type, float height);
     }

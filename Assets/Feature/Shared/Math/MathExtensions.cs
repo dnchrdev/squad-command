@@ -18,5 +18,9 @@ namespace Feature.Shared.Math
         {
             return Quaternion.Slerp(current, target, 1f - Mathf.Exp(-smoothing * dt));
         }
+        
+        public  static Vector3 ToFlat3(Vector3 v) => new Vector3(v.x, 0f, v.z);
+        
+        public  static Vector2 ToFlat2(Vector3 v) => new Vector2(v.x, v.z);
     }
 }

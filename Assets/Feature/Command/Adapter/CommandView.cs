@@ -3,6 +3,7 @@ using System.Linq;
 using Feature.Command.Application.Interfaces;
 using Feature.Command.Domain.Data;
 using Feature.Command.Infrastructure.Data;
+using Feature.Shared.DevTools;
 using Feature.UI.Adapter;
 using R3;
 using UnityEngine;
@@ -17,6 +18,15 @@ namespace Feature.Command.Adapter
 
         private Dictionary<CommandType, ElevationButton> _buttonMap =  new Dictionary<CommandType, ElevationButton>();
 
+        private void OnValidate()
+        {
+            if(_buttons.Count == 0) 
+                Debug.LogError($"_buttons.Count == 0");
+            
+            InspectorRefValidator.CheckAssigned(_lowHeight, nameof(_lowHeight), this);
+            InspectorRefValidator.CheckAssigned(_highHeight, nameof(_highHeight), this);
+        }
+        
         public void Initialize()
         {
             _buttonMap = _buttons.ToDictionary(e => e.Type, e => e.Button);

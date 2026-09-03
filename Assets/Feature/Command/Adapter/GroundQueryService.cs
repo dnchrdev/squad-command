@@ -9,18 +9,23 @@ namespace Feature.Command.Adapter
 {
     public class GroundQueryService : IGroundQueryService
     {
-        [Inject] private readonly IReadOnlyCamera _camera;
-        [Inject] private readonly CommandConfig _config;
+        private readonly IReadOnlyCamera _camera;
+        private readonly LayerMask _groundMask;
+
+        public GroundQueryService(IReadOnlyCamera camera, LayerMask groundMask)
+        {
+            _camera = camera;
+            _groundMask = groundMask;
+        }
 
         public bool TryQueryGroundPoint(Vector2 screenPoint, out Vector3 worldPoint)
         {
             var ray = _camera.Camera.ScreenPointToRay(screenPoint);
-            if (Physics.Raycast(ray, out var hit, 500f, _config.GroundMask))
+            if (Physics.Raycast(ray, out var hit, 500f, _groundMask))
             {
                 worldPoint = hit.point;
                 return true;
             }
-
             worldPoint = default;
             return false;
         }

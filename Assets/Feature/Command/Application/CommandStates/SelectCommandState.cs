@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Feature.Command.Application.CommandStates.Interfaces;
 using Feature.Command.Application.Interfaces;
+using Feature.Command.Domain;
 using Feature.Command.Domain.Data;
 using Feature.Command.Domain.Services;
 using Feature.GameplayECS.Facade.Interfaces;
@@ -12,48 +13,30 @@ using Mathf = UnityEngine.Mathf;
 
 namespace Feature.Command.Application.CommandStates
 {
-    public sealed class SelectCommandState : ICommandState
+     public sealed class SelectCommandState : ICommandState
     {
         [Inject] private readonly ISelectionQueryService _selectionQuery;
         [Inject] private readonly ISelectCommandFacade _select;
-        [Inject] private readonly IUnitQueryFacade _query;
         [Inject] private readonly ISelectRectView _selectRectView;
-        // [Inject] private readonly MovePreviewService _movePreview;
         [Inject] private readonly CommandButtonsVisual _commandButtonsVisual;
 
+        private readonly SelectionModifiers _modifiers = new();
         private Vector2 _dragStart;
         private bool _isDragging;
-        private bool _shiftHold;
-        private bool _ctrlHold;
-        private IReadOnlyList<Entity> _selectedUnits;
 
         public void SetShiftHold(bool shiftHold)
         {
-            _shiftHold = shiftHold;
-
-            if (shiftHold)
-            {
-                _ctrlHold = false;
-            }
-
+            _modifiers.SetShift(shiftHold);
             _select.ClearAllSelectRequests();
         }
 
         public void SetCtrlHold(bool ctrlHold)
         {
-            if (ctrlHold)
-            {
-                _shiftHold = false;
-            }
-
+            _modifiers.SetCtrl(ctrlHold);
             _select.ClearAllSelectRequests();
-            _ctrlHold = ctrlHold;
         }
 
-        public void OnEnter()
-        {
-            _commandButtonsVisual.SetActiveButton(CommandType.Select);
-        }
+        public void OnEnter() => _commandButtonsVisual.SetActiveButton(CommandType.Select);
 
         public void OnExit()
         {
@@ -65,95 +48,54 @@ namespace Feature.Command.Application.CommandStates
         {
             _dragStart = pointerPos;
             _isDragging = true;
-
-            UpdateSelectionRect(pointerPos, out var selectRect);
-
+            _selectRectView.UpdateSelectionRect(BuildRect(pointerPos, pointerPos));
             _selectRectView.Show();
         }
-
 
         public void OnPointerMove(Vector2 pointerPos)
         {
             if (!_isDragging) return;
+            var rect = BuildRect(_dragStart, pointerPos);
+            _selectRectView.UpdateSelectionRect(rect);
 
-            UpdateSelectionRect(pointerPos, out var selectRect);
-
-            var dragDistance = (pointerPos - _dragStart).sqrMagnitude;
-            var threshold = _selectionQuery.GetSingleSelectionThreshold();
-
-            if (dragDistance <= threshold)
+            if ((pointerPos - _dragStart).sqrMagnitude <= _selectionQuery.GetSingleSelectionThreshold())
                 return;
 
-            _selectedUnits = _selectionQuery.QueryUnitsInRect(selectRect);
-
-            if (_shiftHold)
-            {
-                _select.SelectPreview(_selectedUnits);
-            }
-            else if (_ctrlHold)
-            {
-                _select.UnselectPreview(_selectedUnits);
-            }
-            else
-            {
-                _select.SelectPreviewWithClear(_selectedUnits);
-            }
-        }
-
-        private void UpdateSelectionRect(Vector2 screenPos, out Rect selectRect)
-        {
-            selectRect = BuildRect(_dragStart, screenPos);
-            _selectRectView.UpdateSelectionRect(selectRect);
+            ApplySelection(_selectionQuery.QueryUnitsInRect(rect));
         }
 
         public void OnPointerUp(Vector2 pointerPos)
         {
             if (!_isDragging) return;
             _isDragging = false;
-
             _selectRectView.Hide();
 
-            var dragDistance = (pointerPos - _dragStart).sqrMagnitude;
-            var singleSelectionThreshold = _selectionQuery.GetSingleSelectionThreshold();
-
-            if (dragDistance < singleSelectionThreshold)
+            var threshold = _selectionQuery.GetSingleSelectionThreshold();
+            if ((pointerPos - _dragStart).sqrMagnitude < threshold)
             {
-                var unit = _selectionQuery.GetUnitAtPoint(pointerPos, singleSelectionThreshold);
-
+                var unit = _selectionQuery.GetUnitAtPoint(pointerPos, threshold);
                 if (unit.Count > 0)
-                {
-                    if (_shiftHold)
-                    {
-                        _select.ToggleSelectPreview(unit);
-                    }
-                    else if (_ctrlHold)
-                    {
-                        _select.UnselectPreview(unit);
-                    }
-                    else
-                    {
-                        _select.SelectPreviewWithClear(unit);
-                    }
-                }
-                else
-                {
-                    if ((_shiftHold || _ctrlHold) == false)
-                    {
-                        _select.ClearAllSelected();
-                    }
-                }
+                    ApplySelection(unit);
+                else if (_modifiers.Mode == SelectionMode.Replace)
+                    _select.ClearAllSelected();
             }
-
-            //_movePreview.CalculateUnitsCenter(_selectedUnits);
-
             _select.CommitSelected();
+        }
+
+        private void ApplySelection(IReadOnlyList<Entity> units)
+        {
+            switch (_modifiers.Mode)
+            {
+                case SelectionMode.Add: _select.SelectPreview(units); break;
+                case SelectionMode.Remove: _select.UnselectPreview(units); break;
+                default: _select.SelectPreviewWithClear(units); break;
+            }
         }
 
         private Rect BuildRect(Vector2 a, Vector2 b)
         {
             var min = Vector2.Min(a, b);
-            var size = new Vector2(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
-            return new Rect(min, size);
+            return new Rect(min, new Vector2(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y)));
         }
     }
 }
