@@ -3,10 +3,6 @@ using Feature.Core.Infrastructure.Interfaces;
 
 namespace Feature.Core.Infrastructure
 {
-    /// <summary>
-    /// Простейшая реализация IObjectPool поверх Stack.
-    /// Не владеет жизненным циклом T: не создаёт, не уничтожает, не активирует/деактивирует.
-    /// </summary>
     public class ObjectPool<T> : IObjectPool<T>
     {
         private readonly Stack<T> _free;

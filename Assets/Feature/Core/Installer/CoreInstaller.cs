@@ -6,7 +6,7 @@ namespace Feature.Core.Installer
     {
         public override void InstallBindings()
         {
-            //Container.Bind<IObjectPool<T>>().To<ObjectPool<T>>().AsSingle();
+            
         }
     }
 }
