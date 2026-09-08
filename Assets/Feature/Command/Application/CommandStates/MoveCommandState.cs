@@ -36,15 +36,21 @@ namespace Feature.Command.Application.CommandStates
 
         public void OnEnter()
         {
-            _move.ShowAllMoveDestinations();
+            //_move.ShowAllMoveDestinations();
             _commandButtonsVisual.SetActiveButton(CommandType.Move);
         }
 
-        public void OnExit() => _view.Hide();
+        public void OnExit()
+        {
+            _view.Hide();
+            _isDragging = false;
+            _move.ClearPreviewRequest();
+        }
 
         public void OnPointerDown(Vector2 pointerPos)
         {
             _dragStartScreenPos = pointerPos;
+            
             if (!_groundQuery.TryQueryGroundPoint(pointerPos, out var worldPoint))
             {
                 _isDragging = false;
@@ -60,34 +66,39 @@ namespace Feature.Command.Application.CommandStates
 
             _view.SetSelectionStart(pointerPos);
             _view.Show();
-            RequestPreview();
+            _move.NewMovePreviewRequest();
+            RequestUpdatePreview();
         }
 
         public void OnPointerMove(Vector2 pointerPos)
         {
-            if (!_isDragging) return;
+            if (_isDragging == false) return;
             if (_groundQuery.TryQueryGroundPoint(pointerPos, out var worldPoint))
                 _dragEndValidWorldPos = worldPoint;
 
             _view.UpdateDrag(_dragStartScreenPos, pointerPos);
             _formation.UpdateDrag(MathExtensions.ToFlat2(_dragStartWorldPos),
                 MathExtensions.ToFlat2(_dragEndValidWorldPos));
-            RequestPreview();
+            RequestUpdatePreview();
         }
 
         public void OnPointerUp(Vector2 pointerPos)
         {
+            if (_isDragging == false) return;
+            
             _isDragging = false;
             _view.Hide();
-            _move.CommitMove(_formation.Forward);
+            Vector3 selectedUnitsCentroid = _unitQuery.GetUnitsCenter(_unitQuery.GetSelectedUnits());
+            _move.CommitMove(_formation.GetDirectionToCenter(MathExtensions.ToFlat2(selectedUnitsCentroid)));
         }
 
-        private void RequestPreview()
-            => _move.MovePreviewRequest(_formation.Center, _formation.Size, _formation.Forward, _formation.Right);
+        private void RequestUpdatePreview()
+            => _move.UpdateMovePreviewRequest(_formation.Center, _formation.Size, _formation.Forward, _formation.Right);
 
         private Vector3 AverageWorldPosition(IReadOnlyList<Entity> units)
         {
             if (units.Count == 0) return Vector3.zero;
+            
             Vector3 sum = Vector3.zero;
             for (int i = 0; i < units.Count; i++)
                 sum += _unitQuery.GetPosition(units[i]).Value;

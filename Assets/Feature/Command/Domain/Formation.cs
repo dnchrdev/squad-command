@@ -25,6 +25,11 @@ namespace Feature.Command.Domain
             Resize(dragStart, dragEnd);
         }
 
+        public Vector2 GetDirectionToCenter(Vector2 projectedPosition)
+        {
+            return (Center - projectedPosition).normalized;
+        }
+
         private void SetDirection(Vector2 forward)
         {
             if (forward == Vector2.zero) return;

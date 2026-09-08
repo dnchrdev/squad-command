@@ -13,7 +13,7 @@ using Mathf = UnityEngine.Mathf;
 
 namespace Feature.Command.Application.CommandStates
 {
-     public sealed class SelectCommandState : ICommandState
+    public sealed class SelectCommandState : ICommandState
     {
         [Inject] private readonly ISelectionQueryService _selectionQuery;
         [Inject] private readonly ISelectCommandFacade _select;
@@ -42,6 +42,9 @@ namespace Feature.Command.Application.CommandStates
         {
             _isDragging = false;
             _selectRectView.Hide();
+
+            if (_isDragging)
+                _select.ClearAllSelected();
         }
 
         public void OnPointerDown(Vector2 pointerPos)
@@ -54,7 +57,8 @@ namespace Feature.Command.Application.CommandStates
 
         public void OnPointerMove(Vector2 pointerPos)
         {
-            if (!_isDragging) return;
+            if (_isDragging == false) return;
+
             var rect = BuildRect(_dragStart, pointerPos);
             _selectRectView.UpdateSelectionRect(rect);
 
@@ -66,7 +70,8 @@ namespace Feature.Command.Application.CommandStates
 
         public void OnPointerUp(Vector2 pointerPos)
         {
-            if (!_isDragging) return;
+            if (_isDragging == false) return;
+            
             _isDragging = false;
             _selectRectView.Hide();
 
@@ -79,6 +84,7 @@ namespace Feature.Command.Application.CommandStates
                 else if (_modifiers.Mode == SelectionMode.Replace)
                     _select.ClearAllSelected();
             }
+
             _select.CommitSelected();
         }
 
