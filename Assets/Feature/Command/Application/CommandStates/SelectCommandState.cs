@@ -88,6 +88,16 @@ namespace Feature.Command.Application.CommandStates
             _select.CommitSelected();
         }
 
+        public void Canceled()
+        {
+            _isDragging = false;
+
+            _selectRectView.Hide();
+
+            if (_isDragging)
+                _select.ClearAllSelected();
+        }
+
         private void ApplySelection(IReadOnlyList<Entity> units)
         {
             switch (_modifiers.Mode)

@@ -92,6 +92,13 @@ namespace Feature.Command.Application.CommandStates
             _move.CommitMove(_formation.GetDirectionToCenter(MathExtensions.ToFlat2(selectedUnitsCentroid)));
         }
 
+        public void Canceled()
+        {
+            _view.Hide();
+            _isDragging = false;
+            _move.ClearPreviewRequest();
+        }
+        
         private void RequestUpdatePreview()
             => _move.UpdateMovePreviewRequest(_formation.Center, _formation.Size, _formation.Forward, _formation.Right);
 

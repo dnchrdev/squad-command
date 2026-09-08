@@ -11,5 +11,6 @@ namespace Feature.Command.Application.CommandStates.Interfaces
         void OnPointerDown(Vector2 pointerPos);
         void OnPointerUp(Vector2 pointerPos);
         void OnPointerMove(Vector2 pointerPos);
+        void Canceled();
     }
 }
