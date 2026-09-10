@@ -36,7 +36,6 @@ namespace Feature.Command.Application.CommandStates
 
         public void OnEnter()
         {
-            //_move.ShowAllMoveDestinations();
             _commandButtonsVisual.SetActiveButton(CommandType.Move);
         }
 

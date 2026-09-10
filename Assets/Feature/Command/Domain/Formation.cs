@@ -4,7 +4,7 @@ namespace Feature.Command.Domain
 {
     public class Formation
     {
-        private const float MIN_DRAG_FOR_ROTATION = 1f;
+        private const float MIN_DRAG_FOR_ROTATION = 0.5f;
 
         public Vector2 Center { get; private set; }
         public Vector2 Forward { get; private set; } = Vector2.up;
