@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 71f007a49607c744e883a402f96669cd
+    m_Address: MoveSlotDestination
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 94491b4ff5198644782716f115ed3e4b
     m_Address: MoveSlotPreview
     m_ReadOnly: 0
