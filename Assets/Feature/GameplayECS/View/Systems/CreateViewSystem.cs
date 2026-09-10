@@ -10,12 +10,10 @@ namespace Feature.GameplayECS.View.Systems
     public class CreateViewSystem : ISystem
     {
         private readonly IUnitViewFactory _unitViewFactory;
-        private readonly Queue<Entity> _queue = new();
+        private readonly Queue<Entity> _pendingViews = new();
         private bool _isProcessing;
-
         public World World { get; set; }
-
-        private Filter _needView;
+        private Filter _needViewFilter;
         private Stash<AssetPath> _assetPathStash;
         private Stash<Position> _positionStash;
         private Stash<Rotation> _rotationStash;
@@ -28,13 +26,8 @@ namespace Feature.GameplayECS.View.Systems
 
         public void OnAwake()
         {
-            _needView = World.Filter
-                .With<AssetPath>()
-                .With<Position>()
-                .With<Rotation>()
-                .Without<View>()
-                .Build();
-
+            _needViewFilter = World.Filter
+                .With<AssetPath>().With<Position>().With<Rotation>().Without<View>().Build();
             _assetPathStash = World.GetStash<AssetPath>();
             _positionStash = World.GetStash<Position>();
             _rotationStash = World.GetStash<Rotation>();
@@ -43,38 +36,30 @@ namespace Feature.GameplayECS.View.Systems
 
         public void OnUpdate(float deltaTime)
         {
-            foreach (var entity in _needView)
+            foreach (var entity in _needViewFilter)
             {
                 _viewStash.Add(entity);
-                _queue.Enqueue(entity);
+                _pendingViews.Enqueue(entity);
             }
 
-            if (!_isProcessing && _queue.Count > 0)
-            {
-                ProcessQueueAsync().Forget();
-            }
+            if (!_isProcessing && _pendingViews.Count > 0)
+                ProcessPendingViewsAsync().Forget();
         }
 
-        private async UniTask ProcessQueueAsync()
+        private async UniTask ProcessPendingViewsAsync()
         {
             _isProcessing = true;
-
-            while (_queue.Count > 0)
+            while (_pendingViews.Count > 0)
             {
-                var entity = _queue.Dequeue();
+                var entity = _pendingViews.Dequeue();
+                if (World.IsDisposed(entity)) continue;
 
-                if (entity.IsDisposed())
-                {
-                    continue;
-                }
-                
                 string assetPath = _assetPathStash.Get(entity).Value;
                 Vector3 position = _positionStash.Get(entity).Value;
                 Quaternion rotation = _rotationStash.Get(entity).Value;
-
                 var view = await _unitViewFactory.CreateAsync(assetPath, position, rotation);
 
-                if (entity.IsDisposed())
+                if (World.IsDisposed(entity))
                 {
                     _unitViewFactory.Release(view);
                     continue;
@@ -83,7 +68,6 @@ namespace Feature.GameplayECS.View.Systems
                 view.Bind(entity, World);
                 _viewStash.Set(entity, new View { Value = view });
             }
-
             _isProcessing = false;
         }
 

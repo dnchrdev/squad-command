@@ -20,7 +20,7 @@ namespace Feature.GameplayECS.Installer
 
             //Infrastructure
             Container.Bind<IUnitViewFactory>().To<AddressableUnitViewFactory>().AsSingle();
-            Container.Bind<IMovePreviewFactory>().To<MovePreviewFactory>().AsSingle();
+            Container.Bind<IMoveSlotViewFactory>().To<MoveSlotViewFactory>().AsSingle();
         }
     }
 }

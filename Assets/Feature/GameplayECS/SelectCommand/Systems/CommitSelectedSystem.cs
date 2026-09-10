@@ -6,85 +6,66 @@ namespace Feature.GameplayECS.SelectCommand.Systems
     public class CommitSelectedSystem : ISystem
     {
         public World World { get; set; }
-        private Filter _selectCommitRequest;
-        private Filter _selectedSelfFilter;
-        private Filter _unselectedSelfFilter;
-
-        public Stash<Selected> _selectedStash;
-        public Stash<SelectSelfRequest> _selectSelfRequestStash;
-        public Stash<UnselectSelfRequest> _unselectSelfRequestStash;
+        private Filter _commitRequestFilter;
+        private Filter _previewSelectedFilter;
+        private Filter _previewUnselectedFilter;
+        private Stash<CommitSelectedRequest> _commitRequestStash;
+        private Stash<Selected> _selectedStash;
+        private Stash<SelectSelfRequest> _selectSelfStash;
+        private Stash<UnselectSelfRequest> _unselectSelfStash;
         private Stash<SelectedViewShowed> _selectedShowedStash;
         private Stash<SelectViewComponent> _selectViewStash;
-        private Stash<CommitSelectedRequest> _commitSelectedRequest;
 
         public void OnAwake()
         {
-            _selectCommitRequest = World.Filter
-                .With<CommitSelectedRequest>()
-                .Build();
-
-            _selectedSelfFilter = World.Filter
-                .With<UnitTag>()
-                .With<SelectSelfRequest>()
-                .With<SelectViewComponent>()
-                .Without<Selected>()
-                .Build();
-            
-            _unselectedSelfFilter = World.Filter
-                .With<UnitTag>()
-                .With<UnselectSelfRequest>()
-                .With<SelectViewComponent>()
-
-                .Build();
-
+            _commitRequestFilter = World.Filter.With<CommitSelectedRequest>().Build();
+            _previewSelectedFilter = World.Filter
+                .With<UnitTag>().With<SelectSelfRequest>().With<SelectViewComponent>().Without<Selected>().Build();
+            _previewUnselectedFilter = World.Filter
+                .With<UnitTag>().With<UnselectSelfRequest>().With<SelectViewComponent>().Build();
+            _commitRequestStash = World.GetStash<CommitSelectedRequest>();
             _selectedStash = World.GetStash<Selected>();
-            _commitSelectedRequest = World.GetStash<CommitSelectedRequest>();
-            _selectSelfRequestStash = World.GetStash<SelectSelfRequest>();
-            _unselectSelfRequestStash = World.GetStash<UnselectSelfRequest>();
+            _selectSelfStash = World.GetStash<SelectSelfRequest>();
+            _unselectSelfStash = World.GetStash<UnselectSelfRequest>();
             _selectedShowedStash = World.GetStash<SelectedViewShowed>();
             _selectViewStash = World.GetStash<SelectViewComponent>();
         }
 
         public void OnUpdate(float deltaTime)
         {
-            foreach (var request in _selectCommitRequest)
+            bool hasCommit = false;
+            foreach (var _ in _commitRequestFilter) hasCommit = true;
+            if (!hasCommit) return;
+
+            foreach (var entity in _previewSelectedFilter)
             {
-                foreach (var entity in _selectedSelfFilter)
-                {
-                    ref var selectedView = ref _selectViewStash.Get(entity);
-
-                    if (_selectedShowedStash.Has(entity) == false)
-                    {
-                        selectedView.Value.Show();
-                        _selectedShowedStash.Add(entity);
-                    }
-                    
-                    _selectSelfRequestStash.Remove(entity);
-                    _selectedStash.Set(entity);
-                }
-                
-                foreach (var entity in _unselectedSelfFilter)
-                {
-                    ref var selectedView = ref  _selectViewStash.Get(entity);
-                    
-                    
-                    if(_selectedShowedStash.Has(entity))
-                    {
-                        selectedView.Value.Hide();
-                        _selectedShowedStash.Remove(entity);
-                    }
-
-                    if (_selectedStash.Has(entity))
-                    {
-                        _selectedStash.Remove(entity);
-                    }
-                    
-                    _unselectSelfRequestStash.Remove(entity);
-                }
-
-                
-                _commitSelectedRequest.Remove(request);
+                ShowSelectedView(entity);
+                _selectSelfStash.Remove(entity);
+                _selectedStash.Set(entity);
             }
+
+            foreach (var entity in _previewUnselectedFilter)
+            {
+                HideSelectedView(entity);
+                _selectedStash.Remove(entity);
+                _unselectSelfStash.Remove(entity);
+            }
+
+            RequestUtils.ConsumeAllRequests(World, _commitRequestFilter, _commitRequestStash);
+        }
+
+        private void ShowSelectedView(Entity entity)
+        {
+            if (_selectedShowedStash.Has(entity)) return;
+            _selectViewStash.Get(entity).Value.Show();
+            _selectedShowedStash.Add(entity);
+        }
+
+        private void HideSelectedView(Entity entity)
+        {
+            if (!_selectedShowedStash.Has(entity)) return;
+            _selectViewStash.Get(entity).Value.Hide();
+            _selectedShowedStash.Remove(entity);
         }
 
         public void Dispose()

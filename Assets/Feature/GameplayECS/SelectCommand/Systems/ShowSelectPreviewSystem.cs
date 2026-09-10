@@ -6,7 +6,7 @@ namespace Feature.GameplayECS.SelectCommand.Systems
     public class ShowSelectPreviewSystem: ISystem
     {
         public World World { get; set; }
-
+        
         private Filter _selectSelfUnitsFilter;
         private Filter _selectedFilter;
         
@@ -34,7 +34,7 @@ namespace Feature.GameplayECS.SelectCommand.Systems
             _selectedShowedStash = World.GetStash<SelectedViewShowed>();
             _selectViewStash = World.GetStash<SelectViewComponent>();
         }
-
+        
         public void OnUpdate(float deltaTime)
         {
             foreach (var entity in _selectSelfUnitsFilter)
@@ -54,10 +54,10 @@ namespace Feature.GameplayECS.SelectCommand.Systems
             }
             
         }
-
+        
         public void Dispose()
         {
- 
+        
         }
     }
 }

@@ -7,57 +7,41 @@ namespace Feature.GameplayECS.View.Systems
     {
         private readonly IUnitViewFactory _unitViewFactory;
         public World World { get; set; }
-
         private Filter _toDestroyFilter;
-        private Filter _allViews;
-
+        private Filter _allViewsFilter;
         private Stash<View> _viewStash;
 
-        public CleanupViewSystem (IUnitViewFactory unitViewFactory)
+        public CleanupViewSystem(IUnitViewFactory unitViewFactory)
         {
             _unitViewFactory = unitViewFactory;
         }
-        
+
         public void OnAwake()
         {
-            _toDestroyFilter = World.Filter
-                .With<DestroySelfRequest>()
-                .With<View>()
-                .Build();
-            
-            _allViews = World.Filter
-                .With<View>()
-                .Build();
-
+            _toDestroyFilter = World.Filter.With<DestroySelfRequest>().With<View>().Build();
+            _allViewsFilter = World.Filter.With<View>().Build();
             _viewStash = World.GetStash<View>();
         }
 
         public void OnUpdate(float deltaTime)
         {
             foreach (var entity in _toDestroyFilter)
-            {
-                DestriyView(entity);
-            }
+                DestroyView(entity);
         }
-        
+
         public void Dispose()
         {
-            foreach (var entity in _allViews)
-            {
-                DestriyView(entity);
-            }
+            foreach (var entity in _allViewsFilter)
+                DestroyView(entity);
         }
 
-        private void DestriyView(Entity entity)
+        private void DestroyView(Entity entity)
         {
-            ref View view = ref _viewStash.Get(entity);
+            ref var view = ref _viewStash.Get(entity);
+            if (view.Value == null) return;
 
-            if (view.Value == null)
-                return;
-            
             view.Value.Unbind();
             _unitViewFactory.Release(view.Value);
         }
-
     }
 }

@@ -6,5 +6,5 @@ namespace Feature.GameplayECS.Movement
 {
     public struct MovementSpeed : IComponent { public float Value; }
     public struct Velocity : IComponent { public Vector3 Value; }
-    public struct UnitMotorComponent : IComponent { public UnitMotor Value; }
+    public struct UnitMotorComponent : IComponent { public IUnitMotor Value; }
 }

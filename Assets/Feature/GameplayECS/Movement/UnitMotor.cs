@@ -31,10 +31,6 @@ namespace Feature.GameplayECS.Movement
         {
             _rb.linearVelocity = velocity;
         }
-
-        private void Update()
-        {
-            
-        }
+        
     }
 }

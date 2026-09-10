@@ -1,84 +1,52 @@
 ﻿using System.Collections.Generic;
 using Feature.GameplayECS.Common;
 using Feature.GameplayECS.Facade.Interfaces;
-using Feature.GameplayECS.Navigation;
 using Feature.GameplayECS.SelectCommand;
 using Scellecs.Morpeh;
-using UnityEngine;
 
 namespace Feature.GameplayECS.Facade
 {
     public sealed class SelectCommandFacade : ISelectCommandFacade
     {
         private readonly World _world;
-        
         private readonly Filter _selectedFilter;
-        private readonly Filter _selectedSelfFilter;
-        private readonly Filter _unselectedSelfFilter;
-        private readonly Filter _selfSelectedOnlyPreviewFilter;
-
+        private readonly Filter _previewSelectedFilter;
+        private readonly Filter _previewOnlyFilter;
+        private readonly Filter _previewUnselectedFilter;
         private readonly Stash<Selected> _selectedStash;
         private readonly Stash<SelectSelfRequest> _selectSelfStash;
         private readonly Stash<UnselectSelfRequest> _unselectSelfStash;
-        
-        private readonly Stash<CommitSelectedRequest>  _commitSelectedRequestStash;
+        private readonly Stash<CommitSelectedRequest> _commitSelectedRequestStash;
 
         public SelectCommandFacade(World world)
         {
             _world = world;
-            
-            _selectedFilter = _world.Filter
-                .With<UnitTag>()
-                .With<Selected>().Build();
-            
-            _selectedSelfFilter = _world.Filter
-                .With<UnitTag>()
-                .With<SelectSelfRequest>()
-                .Build();
-            
-            _selfSelectedOnlyPreviewFilter = _world.Filter
-                .With<UnitTag>()
-                .With<SelectSelfRequest>()
-                .Without<Selected>()
-                .Build();
-            
-            _unselectedSelfFilter = _world.Filter
-                .With<UnitTag>()
-                .With<UnselectSelfRequest>()
-                .Build();
-
-            _selectedStash = _world.GetStash<Selected>();
-            _selectSelfStash = _world.GetStash<SelectSelfRequest>();
-            _unselectSelfStash = _world.GetStash<UnselectSelfRequest>();
-            _commitSelectedRequestStash = _world.GetStash<CommitSelectedRequest>();   
+            _selectedFilter = world.Filter.With<UnitTag>().With<Selected>().Build();
+            _previewSelectedFilter = world.Filter.With<UnitTag>().With<SelectSelfRequest>().Build();
+            _previewOnlyFilter = world.Filter.With<UnitTag>().With<SelectSelfRequest>().Without<Selected>().Build();
+            _previewUnselectedFilter = world.Filter.With<UnitTag>().With<UnselectSelfRequest>().Build();
+            _selectedStash = world.GetStash<Selected>();
+            _selectSelfStash = world.GetStash<SelectSelfRequest>();
+            _unselectSelfStash = world.GetStash<UnselectSelfRequest>();
+            _commitSelectedRequestStash = world.GetStash<CommitSelectedRequest>();
         }
 
         public void SelectPreview(IReadOnlyList<Entity> entities)
         {
-            ClearSelectionPreviewInternal();
-            for (int i = 0; i < entities.Count; i++)
-            {
-                var entity = entities[i];
-                if (_world.IsDisposed(entity)) continue;
-                _selectSelfStash.Set(entity);
-            }
+            ClearPreview();
+            MarkPreview(entities);
         }
 
         public void SelectPreviewWithClear(IReadOnlyList<Entity> entities)
         {
-            ClearSelectionPreviewInternal();
-            ClearSelectionInternal();
-            for (int i = 0; i < entities.Count; i++)
-            {
-                var entity = entities[i];
-                if (_world.IsDisposed(entity)) continue;
-                _selectSelfStash.Set(entity);
-            }
+            ClearPreview();
+            ClearSelected();
+            MarkPreview(entities);
         }
 
         public void ToggleSelectPreview(IReadOnlyList<Entity> entities)
         {
-            ClearSelectionPreviewInternal();
+            ClearPreview();
             for (int i = 0; i < entities.Count; i++)
             {
                 var entity = entities[i];
@@ -97,7 +65,7 @@ namespace Feature.GameplayECS.Facade
 
         public void UnselectPreview(IReadOnlyList<Entity> entities)
         {
-            ClearUnselectionSelfInternal();
+            ClearPreviewUnselection();
             for (int i = 0; i < entities.Count; i++)
             {
                 var entity = entities[i];
@@ -107,53 +75,54 @@ namespace Feature.GameplayECS.Facade
         }
 
         public void ClearAllSelected()
-        { 
-            ClearSelectionInternal();
-            ClearSelectionSelfInternal();
+        {
+            ClearSelected();
+            ClearPreviewSelection();
         }
-        
+
         public void ClearAllSelectRequests()
-        { 
-            ClearSelectionSelfInternal();
-            ClearUnselectionSelfInternal();
+        {
+            ClearPreviewSelection();
+            ClearPreviewUnselection();
         }
 
         public void CommitSelected()
         {
-            var commitRequest = _world.CreateEntity();
-            _commitSelectedRequestStash.Add(commitRequest);
+            _commitSelectedRequestStash.Add(_world.CreateEntity());
         }
 
-        private void ClearSelectionInternal()
+        private void MarkPreview(IReadOnlyList<Entity> entities)
+        {
+            for (int i = 0; i < entities.Count; i++)
+            {
+                var entity = entities[i];
+                if (!_world.IsDisposed(entity))
+                    _selectSelfStash.Set(entity);
+            }
+        }
+
+        private void ClearSelected()
         {
             foreach (var entity in _selectedFilter)
-            {
                 _selectedStash.Remove(entity);
-            }
         }
-        private void ClearSelectionPreviewInternal()
+
+        private void ClearPreview()
         {
-            foreach (var entity in _selfSelectedOnlyPreviewFilter)
-            {
+            foreach (var entity in _previewOnlyFilter)
                 _selectSelfStash.Remove(entity);
-            }
         }
-        
-        private void ClearSelectionSelfInternal()
+
+        private void ClearPreviewSelection()
         {
-            foreach (var entity in _selectedSelfFilter)
-            {
+            foreach (var entity in _previewSelectedFilter)
                 _selectSelfStash.Remove(entity);
-            }
         }
-        
-        private void ClearUnselectionSelfInternal()
+
+        private void ClearPreviewUnselection()
         {
-            foreach (var entity in _unselectedSelfFilter)
-            {
+            foreach (var entity in _previewUnselectedFilter)
                 _unselectSelfStash.Remove(entity);
-            }
         }
-        
     }
 }

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Feature.GameplayECS.MoveCommand
+namespace Feature.GameplayECS.MoveCommand.Adapter
 {
-    public class MovePreviewView: MonoBehaviour
+    public class MoveSlotView : MonoBehaviour, IMoveSlotView
     {
         public void Show()
         {

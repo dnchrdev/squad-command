@@ -1,5 +1,7 @@
 ﻿using Feature.GameplayECS.Facade.Interfaces;
 using Feature.GameplayECS.MoveCommand;
+using Feature.GameplayECS.MoveCommand.Systems.Destination;
+using Feature.GameplayECS.MoveCommand.Systems.Preview;
 using Scellecs.Morpeh;
 using UnityEngine;
 
@@ -8,36 +10,31 @@ namespace Feature.GameplayECS.Facade
     public class MoveCommandFacade : IMoveCommandFacade
     {
         private readonly World _world;
-        private readonly Stash<MovePreviewRequest> _movePreviewRequestStash;
-        private readonly Stash<HideMovePreviewRequest> _hideMovePreviewRequestStash;
+        private readonly Stash<NewMovePreviewFormationRequest> _newMovePreviewRequestStash;
+        private readonly Stash<UpdateMovePreviewFormationRequest> _updateMovePreviewRequestStash;
+        private readonly Stash<HideMovePreviewSlotsRequest> _hideMovePreviewSlotsRequestStash;
         private readonly Stash<CommitMoveRequest> _commitMoveRequestStash;
 
         public MoveCommandFacade(World world)
         {
             _world = world;
-            _movePreviewRequestStash = world.GetStash<MovePreviewRequest>();
-            _hideMovePreviewRequestStash = world.GetStash<HideMovePreviewRequest>();
+
+            _newMovePreviewRequestStash = world.GetStash<NewMovePreviewFormationRequest>();
+            _updateMovePreviewRequestStash = world.GetStash<UpdateMovePreviewFormationRequest>();
+            _hideMovePreviewSlotsRequestStash = world.GetStash<HideMovePreviewSlotsRequest>();
             _commitMoveRequestStash = world.GetStash<CommitMoveRequest>();
         }
 
-        public void ShowAllMoveDestinations()
+
+        public void NewMovePreviewRequest()
         {
+            _newMovePreviewRequestStash.Add(_world.CreateEntity(), new NewMovePreviewFormationRequest());
         }
 
-        public void StopAll()
+        public void UpdateMovePreviewRequest(Vector2 center, Vector2 size, Vector2 formationForward,
+            Vector2 formationRight)
         {
-            HideMovePreview();
-        }
-
-        public void ClearSelected()
-        {
-        }
-
-        public void MovePreviewRequest(Vector2 center, Vector2 size, Vector2 formationForward, Vector2 formationRight)
-        {
-            var movePreviewRequest = _world.CreateEntity();
-
-            _movePreviewRequestStash.Add(movePreviewRequest, new MovePreviewRequest
+            _updateMovePreviewRequestStash.Add(_world.CreateEntity(), new UpdateMovePreviewFormationRequest
             {
                 Center = center,
                 Size = size,
@@ -48,14 +45,13 @@ namespace Feature.GameplayECS.Facade
 
         public void CommitMove(Vector2 slotsOrderDirection)
         {
-            var commitEntity = _world.CreateEntity();
-            _commitMoveRequestStash.Add(commitEntity, new CommitMoveRequest { FormationForward = slotsOrderDirection});
+            _commitMoveRequestStash.Add(_world.CreateEntity(),
+                new CommitMoveRequest { OrderDirection = slotsOrderDirection });
         }
 
-        private void HideMovePreview()
+        public void ClearPreviewRequest()
         {
-            var hideRequest = _world.CreateEntity();
-            _hideMovePreviewRequestStash.Add(hideRequest, new HideMovePreviewRequest());
+            _hideMovePreviewSlotsRequestStash.Add(_world.CreateEntity());
         }
     }
 }

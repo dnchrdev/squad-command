@@ -34,7 +34,7 @@ namespace Feature.GameplayECS.Synchronization.Systems
             {
                 ref var motor = ref _motorStash.Get(unit);
 
-                if (motor.Value == null) throw new NullReferenceException("UnitMotorComponent.Value is null");
+                if (motor.Value == null) throw new NullReferenceException("UnitMotorComponent.Slot is null");
                 
                 _positionStash.Set(unit, new Position{Value = motor.Value.Position});
                 _rotationStash.Set(unit, new Rotation{Value = motor.Value.Rotation});
