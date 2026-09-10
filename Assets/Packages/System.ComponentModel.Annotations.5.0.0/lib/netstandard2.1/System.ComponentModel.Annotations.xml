@@ -1077,7 +1077,7 @@ Using <see cref="P:System.ComponentModel.DataAnnotations.DisplayFormatAttribute.
       <summary>Gets the <see cref="P:System.ComponentModel.DataAnnotations.ValidationException.ValidationResult" /> instance that describes the validation error.</summary>
       <returns>The <see cref="P:System.ComponentModel.DataAnnotations.ValidationException.ValidationResult" /> instance that describes the validation error.</returns>
     </member>
-    <member name="P:System.ComponentModel.DataAnnotations.ValidationException.Value">
+    <member name="P:System.ComponentModel.DataAnnotations.ValidationException.Slot">
       <summary>Gets the value of the object that causes the <see cref="T:System.ComponentModel.DataAnnotations.ValidationAttribute" /> class to trigger this exception.</summary>
       <returns>The value of the object that caused the <see cref="T:System.ComponentModel.DataAnnotations.ValidationAttribute" /> class to trigger the validation error.</returns>
     </member>
