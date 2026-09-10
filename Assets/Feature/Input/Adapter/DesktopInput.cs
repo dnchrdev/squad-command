@@ -12,7 +12,9 @@ namespace Feature.Input.Adapter
     {
         private readonly ReactiveProperty<Vector2> _pointerDelta = new(Vector2.zero);
         private readonly Subject<float> _zoom = new();
+        private readonly Subject<Unit> _dragStarted = new();
         private readonly ReactiveProperty<bool> _isDragging = new(false);
+        private readonly Subject<Unit> _rotationStarted = new();
         private readonly ReactiveProperty<bool> _isRotating = new(false);
         
         private readonly ReactiveProperty<Vector2> _pointerPosition = new(Vector2.zero);
@@ -31,7 +33,9 @@ namespace Feature.Input.Adapter
 
         public ReadOnlyReactiveProperty<Vector2> PointerDelta => _pointerDelta;
         public Observable<float> Zoom => _zoom;
+        public Observable<Unit> DragStarted => _dragStarted;
         public ReadOnlyReactiveProperty<bool> IsDragging => _isDragging;
+        public Observable<Unit> RotationStarted => _rotationStarted;
         public ReadOnlyReactiveProperty<bool> IsRotating => _isRotating;
         
         public ReadOnlyReactiveProperty<Vector2> PointerPosition => _pointerPosition;
@@ -69,8 +73,14 @@ namespace Feature.Input.Adapter
                 performed: ctx => _zoom.OnNext(ctx.ReadValue<Vector2>().y));
 
             Bind(_inputActions.Camera.EnableDragging,
+                started: ctx => _dragStarted.OnNext(Unit.Default));
+            
+            Bind(_inputActions.Camera.EnableDragging,
                 started: ctx => _isDragging.Value = true,
                 canceled: ctx => _isDragging.Value = false);
+            
+            Bind(_inputActions.Camera.EnableRotation,
+                started: ctx => _rotationStarted.OnNext(Unit.Default));
 
             Bind(_inputActions.Camera.EnableRotation,
                 started: ctx => _isRotating.Value = true,
