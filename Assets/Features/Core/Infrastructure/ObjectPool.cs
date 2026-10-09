@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+using Features.Core.Infrastructure.Interfaces;
+
+namespace Features.Core.Infrastructure
+{
+    public class ObjectPool<T> : IObjectPool<T>
+    {
+        private readonly Stack<T> _free;
+ 
+        public ObjectPool(int capacity = 16)
+        {
+            _free = new Stack<T>(capacity);
+        }
+ 
+        public int FreeCount => _free.Count;
+ 
+        public bool TryGet(out T item)
+        {
+            if (_free.Count > 0)
+            {
+                item = _free.Pop();
+                return true;
+            }
+ 
+            item = default;
+            return false;
+        }
+ 
+        public void Return(T item)
+        {
+            _free.Push(item);
+        }
+ 
+        public void Prewarm(T item)
+        {
+            _free.Push(item);
+        }
+    }
+}
