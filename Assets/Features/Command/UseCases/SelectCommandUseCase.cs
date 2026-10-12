@@ -17,6 +17,7 @@ namespace Features.Command.UseCases
 
         private readonly SelectionModifiers _modifiers = new();
         private Vector2 _dragStart;
+        private Vector2 _dragCurrent;
         private bool _isDragging;
 
         public SelectCommandUseCase(
@@ -49,16 +50,20 @@ namespace Features.Command.UseCases
 
         public void OnExit()
         {
-            _isDragging = false;
-            _frame.HideFrame();
-
             if (_isDragging)
-                _select.ClearSelection();
+            {
+                OnPointerUp(_dragCurrent);
+                return;
+            }
+            
+            _frame.HideFrame();
+            _isDragging = false;
         }
 
         public void OnPointerDown(Vector2 pointerPos)
         {
             _dragStart = pointerPos;
+            _dragCurrent = pointerPos;
             _isDragging = true;
             _frame.ShowFrame(BuildRect(pointerPos, pointerPos));
         }
@@ -67,6 +72,7 @@ namespace Features.Command.UseCases
         {
             if (_isDragging == false) return;
 
+            _dragCurrent = pointerPos;
             var rect = BuildRect(_dragStart, pointerPos);
             _frame.UpdateFrame(rect);
 
@@ -90,7 +96,10 @@ namespace Features.Command.UseCases
                 if (unit.Count > 0)
                     ApplySelection(unit);
                 else if (_modifiers.Mode == SelectionMode.REPLACE)
+                {
                     _select.ClearSelection();
+                    return;
+                }
             }
 
             _select.CommitSelection();
@@ -98,12 +107,11 @@ namespace Features.Command.UseCases
 
         public void Canceled()
         {
-            _isDragging = false;
-
-            _frame.HideFrame();
-
             if (_isDragging)
                 _select.ClearSelection();
+
+            _isDragging = false;
+            _frame.HideFrame();
         }
 
         private void ApplySelection(IReadOnlyList<Entity> units)
