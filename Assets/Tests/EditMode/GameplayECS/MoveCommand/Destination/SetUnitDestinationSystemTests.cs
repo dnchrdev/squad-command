@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
 using Features.GameplayECS.Navigation.Requests;
@@ -28,7 +29,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
             _system = new SetUnitDestinationSystem().Init(_world);
 
             var slot = _world.CreateEntity();
-            _world.GetStash<Position>().Set(slot, new Position { Value = SlotPosition });
+            _world.GetStash<MoveSlotPosition>().Set(slot, new MoveSlotPosition { Value = SlotPosition });
             _unit = _world.CreateEntity();
             _world.GetStash<UnitTag>().Set(_unit);
             _world.GetStash<UnitMoveDestinationSlot>().Set(_unit, new UnitMoveDestinationSlot { Slot = slot });

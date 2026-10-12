@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Features.Core.Infrastructure.Interfaces;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.View;
+using Features.GameplayECS.Synchronization.Outputs;
 using Scellecs.Morpeh;
 using UnityEngine;
 
@@ -23,10 +23,11 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
         private Stash<MoveDestinationSlotTag> _moveDestinationSlotStash;
         private Stash<UnitMoveDestinationSlot> _unitMoveDestinationSlotStash;
         private Stash<Position> _positionStash;
+        private Stash<MoveSlotPosition> _slotPositionStash;
         private Stash<MoveSlotViewComponent> _moveSlotViewStash;
         private Stash<MoveSlotViewShowedTag> _moveSlotViewShowedTagStash;
-        private Stash<AssetPath> _assetPathStash;
-        private Stash<SpawningTag> _spawningTagStash;
+        private Stash<MoveSlotAssetPath> _assetPathStash;
+        private Stash<MoveSlotSpawningTag> _spawningTagStash;
 
         private readonly List<Entity> _unitsBuffer = new();
 
@@ -47,10 +48,11 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
             _moveDestinationSlotStash = World.GetStash<MoveDestinationSlotTag>();
             _unitMoveDestinationSlotStash = World.GetStash<UnitMoveDestinationSlot>();
             _positionStash = World.GetStash<Position>();
+            _slotPositionStash = World.GetStash<MoveSlotPosition>();
             _moveSlotViewStash = World.GetStash<MoveSlotViewComponent>();
             _moveSlotViewShowedTagStash = World.GetStash<MoveSlotViewShowedTag>();
-            _assetPathStash = World.GetStash<AssetPath>();
-            _spawningTagStash = World.GetStash<SpawningTag>();
+            _assetPathStash = World.GetStash<MoveSlotAssetPath>();
+            _spawningTagStash = World.GetStash<MoveSlotSpawningTag>();
         }
 
         public void OnUpdate(float deltaTime)
@@ -65,7 +67,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
                 {
                     {
                         ref var destinationSlotComp = ref _unitMoveDestinationSlotStash.Get(unit);
-                        ref var slotPositionComp = ref _positionStash.Get(destinationSlotComp.Slot);
+                        ref var slotPositionComp = ref _slotPositionStash.Get(destinationSlotComp.Slot);
                         ref var unitPosition = ref _positionStash.Get(unit);
 
                         Vector3 deltaDestination = slotPositionComp.Value - unitPosition.Value;
@@ -90,7 +92,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
 
                             destinationFormationComp.Slots.Remove(destinationSlotComp.Slot);
                             _moveDestinationSlotStash.Remove(destinationSlotComp.Slot);
-                            _positionStash.Remove(destinationSlotComp.Slot);
+                            _slotPositionStash.Remove(destinationSlotComp.Slot);
                             _unitsBuffer.Add(unit);
                             World.RemoveEntity(destinationSlotComp.Slot);
                         }

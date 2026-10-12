@@ -1,7 +1,7 @@
-﻿using Features.GameplayECS.Common.Components;
-using Features.GameplayECS.Navigation.Components;
+﻿using Features.GameplayECS.Navigation.Components;
 using Features.GameplayECS.Navigation.Requests;
 using Features.GameplayECS.Navigation.Systems;
+using Features.GameplayECS.Synchronization.Outputs;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.GameplayECS.Navigation.Fakes;

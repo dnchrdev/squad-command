@@ -1,4 +1,3 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Systems;
 using NUnit.Framework;
@@ -28,7 +27,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
             var view = new SpyMoveSlotView();
             var slot = _world.CreateEntity();
             _world.GetStash<MovePreviewSlotTag>().Set(slot);
-            _world.GetStash<Position>().Set(slot, new Position { Value = new Vector3(3f, 0.01f, 4f) });
+            _world.GetStash<MoveSlotPosition>().Set(slot, new MoveSlotPosition { Value = new Vector3(3f, 0.01f, 4f) });
             _world.GetStash<MoveSlotViewComponent>().Set(slot, new MoveSlotViewComponent { Value = view });
             _world.Commit();
 

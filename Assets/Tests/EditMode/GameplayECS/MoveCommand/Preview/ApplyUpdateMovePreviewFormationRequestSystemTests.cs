@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Components;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
@@ -93,7 +92,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
                 });
         }
 
-        private Vector3 PositionOf(Entity slot) => _world.GetStash<Position>().Get(slot).Value;
+        private Vector3 PositionOf(Entity slot) => _world.GetStash<MoveSlotPosition>().Get(slot).Value;
 
         private void Run()
         {

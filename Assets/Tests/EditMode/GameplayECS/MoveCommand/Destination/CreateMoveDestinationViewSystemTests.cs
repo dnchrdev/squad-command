@@ -1,4 +1,3 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
@@ -31,7 +30,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
 
             _slot = _world.CreateEntity();
             _world.GetStash<MoveDestinationSlotTag>().Set(_slot);
-            _world.GetStash<AssetPath>().Set(_slot, new AssetPath { Value = DESTINATION_SLOT_ASSET_PATH });
+            _world.GetStash<MoveSlotAssetPath>().Set(_slot, new MoveSlotAssetPath { Value = DESTINATION_SLOT_ASSET_PATH });
             _world.Commit();
         }
 

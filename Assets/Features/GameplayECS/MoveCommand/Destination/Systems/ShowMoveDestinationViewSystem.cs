@@ -1,5 +1,4 @@
-﻿using Features.GameplayECS.Common.Components;
-using Features.GameplayECS.MoveCommand.Components;
+﻿using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Scellecs.Morpeh;
 
@@ -19,7 +18,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
             _needToShowMoveSlotViewFilter = World.Filter
                 .With<MoveDestinationSlotTag>()
                 .With<MoveSlotViewComponent>()
-                .Without<AssetPath>()
+                .Without<MoveSlotAssetPath>()
                 .Without<MoveSlotViewShowedTag>()
                 .Build();
         

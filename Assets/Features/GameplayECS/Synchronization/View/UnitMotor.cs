@@ -1,5 +1,4 @@
 ﻿using System;
-using Features.GameplayECS.Common.Components;
 using UnityEngine;
 
 namespace Features.GameplayECS.Synchronization.View

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
 using Features.GameplayECS.MoveCommand.View;
+using Features.GameplayECS.Synchronization.Outputs;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.GameplayECS.MoveCommand.Fakes;
@@ -33,7 +33,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
 
             _view = new SpyMoveSlotView();
             _slot = _world.CreateEntity();
-            _world.GetStash<Position>().Set(_slot, new Position { Value = Vector3.zero });
+            _world.GetStash<MoveSlotPosition>().Set(_slot, new MoveSlotPosition { Value = Vector3.zero });
             _world.GetStash<MoveDestinationSlotTag>().Set(_slot);
             _world.GetStash<MoveSlotViewComponent>().Set(_slot, new MoveSlotViewComponent { Value = _view });
             _world.GetStash<MoveSlotViewShowedTag>().Set(_slot);

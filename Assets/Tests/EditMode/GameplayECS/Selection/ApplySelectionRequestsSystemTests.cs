@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Selection.Components;
+using Features.GameplayECS.Selection.Outputs;
 using Features.GameplayECS.Selection.Requests;
 using Features.GameplayECS.Selection.Systems;
 using NUnit.Framework;

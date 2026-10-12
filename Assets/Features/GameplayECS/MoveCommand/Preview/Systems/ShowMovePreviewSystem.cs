@@ -1,5 +1,4 @@
-﻿using Features.GameplayECS.Common.Components;
-using Features.GameplayECS.MoveCommand.Components;
+﻿using Features.GameplayECS.MoveCommand.Components;
 using Scellecs.Morpeh;
 
 namespace Features.GameplayECS.MoveCommand.Preview.Systems
@@ -18,7 +17,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
             _needToShowMoveSlotViewFilter = World.Filter
                 .With<MovePreviewSlotTag>()
                 .With<MoveSlotViewComponent>()
-                .Without<AssetPath>()
+                .Without<MoveSlotAssetPath>()
                 .Without<MoveSlotViewShowedTag>()
                 .Build();
         

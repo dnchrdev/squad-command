@@ -1,4 +1,3 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Systems;
 using NUnit.Framework;
@@ -56,7 +55,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
         [Test]
         public void OnUpdate_SlotStillHasAssetPath_IsNotShown()
         {
-            _world.GetStash<AssetPath>().Set(_slot, new AssetPath { Value = "MoveSlotPreview" });
+            _world.GetStash<MoveSlotAssetPath>().Set(_slot, new MoveSlotAssetPath { Value = "MoveSlotPreview" });
             _world.Commit();
 
             _system.OnUpdate(DT);

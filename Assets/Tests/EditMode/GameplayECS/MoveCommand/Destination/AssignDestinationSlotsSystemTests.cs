@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
+using Features.GameplayECS.Synchronization.Outputs;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.TestUtils;
@@ -31,8 +33,8 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
 
             _leftUnit = CreateUnit(new Vector3(0f, 0f, 0f));
             _rightUnit = CreateUnit(new Vector3(10f, 0f, 0f));
-            _rightSlot = CreateWithPosition(new Vector3(10f, 0f, 1f));
-            _leftSlot = CreateWithPosition(new Vector3(0f, 0f, 1f));
+            _rightSlot = CreateSlot(new Vector3(10f, 0f, 1f));
+            _leftSlot = CreateSlot(new Vector3(0f, 0f, 1f));
 
             _formation = _world.CreateEntity();
             _world.GetStash<MoveDestinationFormation>().Set(_formation, new MoveDestinationFormation
@@ -88,16 +90,17 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
 
         private Entity CreateUnit(Vector3 position)
         {
-            var unit = CreateWithPosition(position);
+            var unit = _world.CreateEntity();
             _world.GetStash<UnitTag>().Set(unit);
+            _world.GetStash<Position>().Set(unit, new Position { Value = position });
             return unit;
         }
 
-        private Entity CreateWithPosition(Vector3 position)
+        private Entity CreateSlot(Vector3 position)
         {
-            var entity = _world.CreateEntity();
-            _world.GetStash<Position>().Set(entity, new Position { Value = position });
-            return entity;
+            var slot = _world.CreateEntity();
+            _world.GetStash<MoveSlotPosition>().Set(slot, new MoveSlotPosition { Value = position });
+            return slot;
         }
 
         private void Run()

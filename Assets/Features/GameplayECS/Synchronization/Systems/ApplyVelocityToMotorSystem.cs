@@ -1,4 +1,5 @@
 ﻿using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.Physics.Outputs;
 using Features.GameplayECS.Synchronization.Components;
 using Scellecs.Morpeh;
 

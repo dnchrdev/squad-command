@@ -1,5 +1,5 @@
-﻿using Features.GameplayECS.Navigation.Systems.Ports;
-using Features.GameplayECS.Navigation.Systems;
+﻿using Features.GameplayECS.Navigation.Systems;
+using Features.GameplayECS.Navigation.Systems.Ports;
 using Scellecs.Morpeh;
 
 namespace Features.GameplayECS.Navigation

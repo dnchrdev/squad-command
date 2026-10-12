@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Components;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
@@ -32,13 +31,13 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
 
             _shownView = new SpyMoveSlotView();
             var shownSlot = CreateSlot();
-            _world.GetStash<Position>().Set(shownSlot, new Position { Value = Vector3.zero });
+            _world.GetStash<MoveSlotPosition>().Set(shownSlot, new MoveSlotPosition { Value = Vector3.zero });
             _world.GetStash<MoveSlotViewComponent>().Set(shownSlot, new MoveSlotViewComponent { Value = _shownView });
             _world.GetStash<MoveSlotViewShowedTag>().Set(shownSlot);
 
             var loadingSlot = CreateSlot();
-            _world.GetStash<AssetPath>().Set(loadingSlot, new AssetPath { Value = "MoveSlotPreview" });
-            _world.GetStash<SpawningTag>().Set(loadingSlot);
+            _world.GetStash<MoveSlotAssetPath>().Set(loadingSlot, new MoveSlotAssetPath { Value = "MoveSlotPreview" });
+            _world.GetStash<MoveSlotSpawningTag>().Set(loadingSlot);
 
             _formation = _world.CreateEntity();
             _world.GetStash<MovePreviewFormation>().Set(_formation,

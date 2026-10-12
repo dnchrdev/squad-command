@@ -1,4 +1,3 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
@@ -29,7 +28,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
             var view = new SpyMoveSlotView();
             var slot = _world.CreateEntity();
             _world.GetStash<MoveDestinationSlotTag>().Set(slot);
-            _world.GetStash<Position>().Set(slot, new Position { Value = new Vector3(3f, 0f, 4f) });
+            _world.GetStash<MoveSlotPosition>().Set(slot, new MoveSlotPosition { Value = new Vector3(3f, 0f, 4f) });
             _world.GetStash<MoveSlotViewComponent>().Set(slot, new MoveSlotViewComponent { Value = view });
             _world.Commit();
 

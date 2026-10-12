@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Features.Core.Infrastructure.Interfaces;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Ports;
@@ -23,10 +22,10 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
 
         private Filter _needViewSlotFilter;
 
-        private Stash<AssetPath> _assetPathStash;
+        private Stash<MoveSlotAssetPath> _assetPathStash;
         private Stash<MoveSlotViewComponent> _moveSlotViewStash;
         private Stash<MoveSlotViewShowedTag> _moveSlotViewShowedTagStash;
-        private Stash<SpawningTag> _spawningTagStash;
+        private Stash<MoveSlotSpawningTag> _spawningTagStash;
 
         public CreateMoveDestinationViewSystem(IObjectPool<IMoveSlotView> pool, IMoveSlotViewFactory moveSlotViewFactory)
         {
@@ -38,15 +37,15 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
         {
             _needViewSlotFilter = World.Filter
                 .With<MoveDestinationSlotTag>()
-                .With<AssetPath>()
+                .With<MoveSlotAssetPath>()
                 .Without<MoveSlotViewComponent>()
-                .Without<SpawningTag>()
+                .Without<MoveSlotSpawningTag>()
                 .Build();
 
-            _assetPathStash = World.GetStash<AssetPath>();
+            _assetPathStash = World.GetStash<MoveSlotAssetPath>();
             _moveSlotViewStash = World.GetStash<MoveSlotViewComponent>();
             _moveSlotViewShowedTagStash = World.GetStash<MoveSlotViewShowedTag>();
-            _spawningTagStash = World.GetStash<SpawningTag>();
+            _spawningTagStash = World.GetStash<MoveSlotSpawningTag>();
         }
 
         public void OnUpdate(float deltaTime)

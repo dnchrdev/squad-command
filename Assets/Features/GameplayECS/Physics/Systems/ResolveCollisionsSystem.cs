@@ -1,6 +1,9 @@
 ﻿using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.Movement.Outputs;
 using Features.GameplayECS.Physics.Components;
+using Features.GameplayECS.Physics.Outputs;
 using Features.GameplayECS.Physics.Systems.Ports;
+using Features.GameplayECS.Synchronization.Outputs;
 using Scellecs.Morpeh;
 using UnityEngine;
 
@@ -28,7 +31,7 @@ namespace Features.GameplayECS.Physics.Systems
         private Stash<StaticBodyTag> _staticStash;
         private Stash<PlayerControlledTag> _playerStash;
         private Stash<AIControlledTag> _aiStash;
-        private Stash<PhysicsForce> _forceStash;
+        private Stash<DesiredVelocity> _desiredVelocityStash;
         private Stash<Velocity> _velocityStash;
 
         public void OnAwake()
@@ -37,7 +40,7 @@ namespace Features.GameplayECS.Physics.Systems
                 .With<UnitTag>()
                 .With<Position>()
                 .With<CollisionRadius>()
-                .With<PhysicsForce>()
+                .With<DesiredVelocity>()
                 .With<Velocity>()
                 .Without<StaticBodyTag>()
                 .Build();
@@ -53,7 +56,7 @@ namespace Features.GameplayECS.Physics.Systems
             _staticStash = World.GetStash<StaticBodyTag>();
             _playerStash = World.GetStash<PlayerControlledTag>();
             _aiStash = World.GetStash<AIControlledTag>();
-            _forceStash = World.GetStash<PhysicsForce>();
+            _desiredVelocityStash = World.GetStash<DesiredVelocity>();
             _velocityStash = World.GetStash<Velocity>();
         }
 
@@ -63,10 +66,10 @@ namespace Features.GameplayECS.Physics.Systems
             {
                 var objPos = _positionStash.Get(entity).Value;
                 var objRadius = _radiusStash.Get(entity).Value;
-                var objVelocity = _forceStash.Get(entity).Value;
+                var objDesiredVelocity = _desiredVelocityStash.Get(entity).Value;
 
                 ref var velocity = ref _velocityStash.Get(entity);
-                velocity.Value = objVelocity;
+                velocity.Value = objDesiredVelocity;
 
                 var objIsPlayer = _playerStash.Has(entity);
                 var objIsAi = _aiStash.Has(entity);
@@ -100,23 +103,23 @@ namespace Features.GameplayECS.Physics.Systems
 
                     if (otherIsStatic || isOtherSide)
                     {
-                        var scalarProduct = Vector3.Dot(deltaDirection, -objVelocity.normalized);
+                        var scalarProduct = Vector3.Dot(deltaDirection, -objDesiredVelocity.normalized);
                         var angle = Mathf.Acos(Mathf.Clamp(scalarProduct, -1f, 1f)) * Mathf.Rad2Deg;
                         var scale = Mathf.Cos(angle * Mathf.Deg2Rad);
 
                         if (scale > 0)
                         {
-                            velocity.Value += deltaDirection * objVelocity.magnitude * scale;
+                            velocity.Value += deltaDirection * objDesiredVelocity.magnitude * scale;
                         }
                     }
                     else
                     {
-                        var otherVelocity = _forceStash.Get(other).Value;
-                        if (otherVelocity != Vector3.zero)
+                        var otherDesiredVelocity = _desiredVelocityStash.Get(other).Value;
+                        if (otherDesiredVelocity != Vector3.zero)
                         {
-                            var otherSpeed = otherVelocity.magnitude;
+                            var otherSpeed = otherDesiredVelocity.magnitude;
 
-                            var scalarProduct = Vector3.Dot(deltaDirection, otherVelocity.normalized);
+                            var scalarProduct = Vector3.Dot(deltaDirection, otherDesiredVelocity.normalized);
                             var angle = Mathf.Acos(Mathf.Clamp(scalarProduct, -1f, 1f)) * Mathf.Rad2Deg;
                             var scale = Mathf.Cos(angle * Mathf.Deg2Rad);
 

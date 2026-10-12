@@ -1,5 +1,4 @@
-﻿using Features.GameplayECS.Common.Components;
-using Features.GameplayECS.MoveCommand.Components;
+﻿using Features.GameplayECS.MoveCommand.Components;
 using Scellecs.Morpeh;
 
 namespace Features.GameplayECS.MoveCommand.Preview.Systems
@@ -10,18 +9,18 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
 
         private Filter _syncMoveSlotFilter;
 
-        private Stash<Position> _positionStash;
+        private Stash<MoveSlotPosition> _positionStash;
         private Stash<MoveSlotViewComponent> _slotViewStash;
 
         public void OnAwake()
         {
             _syncMoveSlotFilter = World.Filter
                 .With<MovePreviewSlotTag>()
-                .With<Position>()
+                .With<MoveSlotPosition>()
                 .With<MoveSlotViewComponent>()
                 .Build();
 
-            _positionStash = World.GetStash<Position>();
+            _positionStash = World.GetStash<MoveSlotPosition>();
             _slotViewStash = World.GetStash<MoveSlotViewComponent>();
         }
 

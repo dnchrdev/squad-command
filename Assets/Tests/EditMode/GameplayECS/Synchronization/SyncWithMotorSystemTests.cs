@@ -1,6 +1,6 @@
 using System;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Synchronization.Components;
+using Features.GameplayECS.Synchronization.Outputs;
 using Features.GameplayECS.Synchronization.Systems;
 using NUnit.Framework;
 using Scellecs.Morpeh;

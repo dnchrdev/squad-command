@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Features.Core.Infrastructure.Interfaces;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Ports;
 using Features.GameplayECS.MoveCommand.View;
@@ -22,9 +21,9 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
 
         private Filter _needViewSlotFilter;
 
-        private Stash<AssetPath> _assetPathStash;
+        private Stash<MoveSlotAssetPath> _assetPathStash;
         private Stash<MoveSlotViewComponent> _moveSlotViewStash;
-        private Stash<SpawningTag> _spawningTagStash;
+        private Stash<MoveSlotSpawningTag> _spawningTagStash;
 
         public CreateMovePreviewViewSystem(IObjectPool<IMoveSlotView> pool, IMoveSlotViewFactory moveSlotViewFactory)
         {
@@ -36,14 +35,14 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
         {
             _needViewSlotFilter = World.Filter
                 .With<MovePreviewSlotTag>()
-                .With<AssetPath>()
+                .With<MoveSlotAssetPath>()
                 .Without<MoveSlotViewComponent>()
-                .Without<SpawningTag>()
+                .Without<MoveSlotSpawningTag>()
                 .Build();
 
-            _assetPathStash = World.GetStash<AssetPath>();
+            _assetPathStash = World.GetStash<MoveSlotAssetPath>();
             _moveSlotViewStash = World.GetStash<MoveSlotViewComponent>();
-            _spawningTagStash = World.GetStash<SpawningTag>();
+            _spawningTagStash = World.GetStash<MoveSlotSpawningTag>();
         }
 
         public void OnUpdate(float deltaTime)

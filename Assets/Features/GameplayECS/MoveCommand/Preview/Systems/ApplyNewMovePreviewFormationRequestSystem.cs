@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Common;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Components;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
+using Features.GameplayECS.Selection.Outputs;
 using Scellecs.Morpeh;
 
 namespace Features.GameplayECS.MoveCommand.Preview.Systems
@@ -20,7 +20,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
         private Stash<NewMovePreviewFormationRequest> _newMoveFormationRequestStash;
         private Stash<MovePreviewSlotTag> _movePreviewSlotStash;
         private Stash<MovePreviewFormation> _movePreviewFormationStash;
-        private Stash<AssetPath> _assetPathStash;
+        private Stash<MoveSlotAssetPath> _assetPathStash;
 
         private readonly List<Entity> _slotsBuffer = new();
 
@@ -38,7 +38,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
             _newMoveFormationRequestStash = World.GetStash<NewMovePreviewFormationRequest>();
             _movePreviewSlotStash = World.GetStash<MovePreviewSlotTag>();
             _movePreviewFormationStash = World.GetStash<MovePreviewFormation>();
-            _assetPathStash = World.GetStash<AssetPath>();
+            _assetPathStash = World.GetStash<MoveSlotAssetPath>();
         }
 
         public void OnUpdate(float deltaTime)
@@ -74,7 +74,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
                 Entity previewSlot;
                 {
                     previewSlot = World.CreateEntity();
-                    _assetPathStash.Set(previewSlot, new AssetPath { Value = MOVE_SLOT_ASSET_PATH });
+                    _assetPathStash.Set(previewSlot, new MoveSlotAssetPath { Value = MOVE_SLOT_ASSET_PATH });
                 }
 
                 _movePreviewSlotStash.Set(previewSlot, new MovePreviewSlotTag { });

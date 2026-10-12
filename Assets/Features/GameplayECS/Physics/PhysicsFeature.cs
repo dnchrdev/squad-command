@@ -8,7 +8,6 @@ namespace Features.GameplayECS.Physics
     {
         public static void Add(SystemsGroup group, IRandomSource random)
         {
-            group.AddSystem(new SnapshotVelocityForPhysicsSystem());
             group.AddSystem(new ResolveCollisionsSystem(random));
         }
     }

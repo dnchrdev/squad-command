@@ -1,6 +1,9 @@
 using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.Movement.Outputs;
 using Features.GameplayECS.Physics.Components;
+using Features.GameplayECS.Physics.Outputs;
 using Features.GameplayECS.Physics.Systems;
+using Features.GameplayECS.Synchronization.Outputs;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.GameplayECS.Physics.Fakes;
@@ -120,6 +123,18 @@ namespace Tests.EditMode.GameplayECS.Physics
             VectorAssert.AreEqual(new Vector3(60f, 0f, 80f), VelocityOf(unit));
         }
 
+        [Test]
+        public void OnUpdate_LeavesDesiredVelocityUntouched()
+        {
+            var unit = CreatePlayerUnit(Origin, new Vector3(2f, 0f, 0f));
+            CreateStaticBody(Overlapping);
+            _world.Commit();
+
+            _system.OnUpdate(DT);
+
+            VectorAssert.AreEqual(new Vector3(2f, 0f, 0f), _world.GetStash<DesiredVelocity>().Get(unit).Value);
+        }
+
         private Entity CreatePlayerUnit(Vector3 position, Vector3 force)
         {
             var unit = CreateBody(position, force);
@@ -130,8 +145,8 @@ namespace Tests.EditMode.GameplayECS.Physics
         private Entity CreateBody(Vector3 position, Vector3 force)
         {
             var body = CreateCollider(position);
-            _world.GetStash<PhysicsForce>().Set(body, new PhysicsForce { Value = force });
-            _world.GetStash<Velocity>().Set(body, new Velocity { Value = force });
+            _world.GetStash<DesiredVelocity>().Set(body, new DesiredVelocity { Value = force });
+            _world.GetStash<Velocity>().Set(body, new Velocity { Value = Vector3.zero });
             return body;
         }
 

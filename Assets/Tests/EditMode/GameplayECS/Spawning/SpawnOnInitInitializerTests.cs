@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Movement.Components;
+using Features.GameplayECS.Movement.Outputs;
+using Features.GameplayECS.Navigation.Outputs;
 using Features.GameplayECS.Physics.Components;
+using Features.GameplayECS.Physics.Outputs;
 using Features.GameplayECS.Spawning.Systems;
+using Features.GameplayECS.Synchronization.Outputs;
+using Features.GameplayECS.UnitView.Components;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.TestUtils;
@@ -45,7 +50,7 @@ namespace Tests.EditMode.GameplayECS.Spawning
                 .With<Rotation>()
                 .With<Velocity>()
                 .With<SteeringDirection>()
-                .With<PhysicsForce>()
+                .With<DesiredVelocity>()
                 .With<CollisionRadius>()
                 .With<PlayerControlledTag>()
                 .Build();

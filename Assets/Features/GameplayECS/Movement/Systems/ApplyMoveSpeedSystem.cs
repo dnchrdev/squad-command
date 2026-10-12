@@ -1,5 +1,7 @@
 ﻿using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Movement.Components;
+using Features.GameplayECS.Movement.Outputs;
+using Features.GameplayECS.Navigation.Outputs;
 using Scellecs.Morpeh;
 
 namespace Features.GameplayECS.Movement.Systems
@@ -10,7 +12,7 @@ namespace Features.GameplayECS.Movement.Systems
 
         private Filter _moveUnitsFilter;
 
-        private Stash<Velocity> _velocityStash;
+        private Stash<DesiredVelocity> _desiredVelocityStash;
         private Stash<MovementSpeed> _moveSpeedStash;
         private Stash<SteeringDirection> _steeringDirectionStash;
 
@@ -18,12 +20,12 @@ namespace Features.GameplayECS.Movement.Systems
         {
             _moveUnitsFilter = World.Filter
                 .With<UnitTag>()
-                .With<Velocity>()
+                .With<DesiredVelocity>()
                 .With<MovementSpeed>()
                 .With<SteeringDirection>()
                 .Build();
 
-            _velocityStash = World.GetStash<Velocity>();
+            _desiredVelocityStash = World.GetStash<DesiredVelocity>();
             _moveSpeedStash = World.GetStash<MovementSpeed>();
             _steeringDirectionStash = World.GetStash<SteeringDirection>();
         }
@@ -32,11 +34,11 @@ namespace Features.GameplayECS.Movement.Systems
         {
             foreach (var entity in _moveUnitsFilter)
             {
-                ref var velocity = ref _velocityStash.Get(entity);
+                ref var desiredVelocity = ref _desiredVelocityStash.Get(entity);
                 ref var movementSpeed = ref _moveSpeedStash.Get(entity);
                 ref var steeringDirection = ref _steeringDirectionStash.Get(entity);
 
-                velocity.Value += steeringDirection.Value * movementSpeed.Value;
+                desiredVelocity.Value += steeringDirection.Value * movementSpeed.Value;
             }
         }
 

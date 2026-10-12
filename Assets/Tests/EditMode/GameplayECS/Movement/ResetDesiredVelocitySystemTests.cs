@@ -1,4 +1,5 @@
 using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.Movement.Outputs;
 using Features.GameplayECS.Movement.Systems;
 using NUnit.Framework;
 using Scellecs.Morpeh;
@@ -7,52 +8,52 @@ using UnityEngine;
 
 namespace Tests.EditMode.GameplayECS.Movement
 {
-    public class ResetVelocitySystemTests
+    public class ResetDesiredVelocitySystemTests
     {
         private const float DT = 0.02f;
-        private static readonly Vector3 OldVelocity = new Vector3(1f, 2f, 3f);
+        private static readonly Vector3 OldDesiredVelocity = new Vector3(1f, 2f, 3f);
 
         private World _world;
-        private ResetVelocitySystem _system;
+        private ResetDesiredVelocitySystem _system;
 
         [SetUp]
         public void SetUp()
         {
             _world = World.Create();
-            _system = new ResetVelocitySystem().Init(_world);
+            _system = new ResetDesiredVelocitySystem().Init(_world);
         }
 
         [TearDown]
         public void TearDown() => _world.Dispose();
 
         [Test]
-        public void OnUpdate_SetsUnitVelocityToZero()
+        public void OnUpdate_SetsUnitDesiredVelocityToZero()
         {
-            var unit = CreateWithVelocity(true);
+            var unit = CreateWithDesiredVelocity(true);
             _world.Commit();
 
             _system.OnUpdate(DT);
 
-            VectorAssert.AreEqual(Vector3.zero, _world.GetStash<Velocity>().Get(unit).Value);
+            VectorAssert.AreEqual(Vector3.zero, _world.GetStash<DesiredVelocity>().Get(unit).Value);
         }
 
         [Test]
         public void OnUpdate_IgnoresEntitiesWithoutUnitTag()
         {
-            var entity = CreateWithVelocity(false);
+            var entity = CreateWithDesiredVelocity(false);
             _world.Commit();
 
             _system.OnUpdate(DT);
 
-            VectorAssert.AreEqual(OldVelocity, _world.GetStash<Velocity>().Get(entity).Value);
+            VectorAssert.AreEqual(OldDesiredVelocity, _world.GetStash<DesiredVelocity>().Get(entity).Value);
         }
 
-        private Entity CreateWithVelocity(bool isUnit)
+        private Entity CreateWithDesiredVelocity(bool isUnit)
         {
             var entity = _world.CreateEntity();
             if (isUnit)
                 _world.GetStash<UnitTag>().Set(entity);
-            _world.GetStash<Velocity>().Set(entity, new Velocity { Value = OldVelocity });
+            _world.GetStash<DesiredVelocity>().Set(entity, new DesiredVelocity { Value = OldDesiredVelocity });
             return entity;
         }
     }

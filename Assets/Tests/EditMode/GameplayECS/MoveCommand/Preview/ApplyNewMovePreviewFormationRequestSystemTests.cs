@@ -4,6 +4,7 @@ using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Components;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
 using Features.GameplayECS.MoveCommand.Preview.Systems;
+using Features.GameplayECS.Selection.Outputs;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.TestUtils;
@@ -45,7 +46,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
             foreach (var slot in slots)
             {
                 Assert.That(_world.GetStash<MovePreviewSlotTag>().Has(slot), Is.True);
-                Assert.That(_world.GetStash<AssetPath>().Get(slot).Value, Is.EqualTo(PREVIEW_SLOT_ASSET_PATH));
+                Assert.That(_world.GetStash<MoveSlotAssetPath>().Get(slot).Value, Is.EqualTo(PREVIEW_SLOT_ASSET_PATH));
             }
         }
 

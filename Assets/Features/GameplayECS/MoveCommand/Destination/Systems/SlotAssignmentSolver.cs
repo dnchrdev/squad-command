@@ -6,21 +6,21 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
 {
     public sealed class SlotAssignmentSolver
     {
-        private const int UNASSIGNED = -1;
+        private const int NONE = -1;
 
-        private double[,] _cost = new double[1, 1];
-        private double[] _rowPotential = new double[1];
-        private double[] _columnPotential = new double[1];
-        private double[] _minSlack = new double[1];
-        private int[] _rowOfColumn = new int[1];
-        private int[] _previousColumn = new int[1];
-        private bool[] _usedColumn = new bool[1];
+        private double[,] _cost = new double[0, 0];
+        private double[] _rowPotential = Array.Empty<double>();
+        private double[] _columnPotential = Array.Empty<double>();
+        private int[] _rowInColumn = Array.Empty<int>();
+        private double[] _cheapestReach = Array.Empty<double>();
+        private int[] _reachedFromColumn = Array.Empty<int>();
+        private bool[] _isColumnInChain = Array.Empty<bool>();
 
         public void Solve(IReadOnlyList<Vector3> units, IReadOnlyList<Vector3> slots, List<int> slotIndexOfUnit)
         {
             slotIndexOfUnit.Clear();
             for (int i = 0; i < units.Count; i++)
-                slotIndexOfUnit.Add(UNASSIGNED);
+                slotIndexOfUnit.Add(NONE);
 
             if (units.Count == 0 || slots.Count == 0) return;
 
@@ -28,113 +28,151 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
             int rows = unitsAreRows ? units.Count : slots.Count;
             int columns = unitsAreRows ? slots.Count : units.Count;
 
-            EnsureCapacity(rows, columns);
+            Prepare(rows, columns);
+            FillCosts(units, slots, unitsAreRows, rows, columns);
 
-            for (int row = 1; row <= rows; row++)
-            for (int column = 1; column <= columns; column++)
+            for (int row = 0; row < rows; row++)
+                AddRow(row, columns);
+
+            for (int column = 0; column < columns; column++)
             {
-                int unit = unitsAreRows ? row - 1 : column - 1;
-                int slot = unitsAreRows ? column - 1 : row - 1;
-                _cost[row, column] = FlatSqrDistance(units[unit], slots[slot]);
-            }
+                int row = _rowInColumn[column];
+                if (row == NONE) continue;
 
-            RunHungarian(rows, columns);
-
-            for (int column = 1; column <= columns; column++)
-            {
-                int row = _rowOfColumn[column];
-                if (row == 0) continue;
-
-                int unit = unitsAreRows ? row - 1 : column - 1;
-                int slot = unitsAreRows ? column - 1 : row - 1;
+                int unit = unitsAreRows ? row : column;
+                int slot = unitsAreRows ? column : row;
                 slotIndexOfUnit[unit] = slot;
             }
         }
 
-        private void RunHungarian(int rows, int columns)
+        private void AddRow(int newRow, int columns)
         {
-            Array.Clear(_rowPotential, 0, rows + 1);
-            Array.Clear(_columnPotential, 0, columns + 1);
-            Array.Clear(_rowOfColumn, 0, columns + 1);
-            Array.Clear(_previousColumn, 0, columns + 1);
+            ResetChain(columns);
 
-            for (int row = 1; row <= rows; row++)
+            int searchingRow = newRow;
+            int fromColumn = NONE;
+
+            while (true)
             {
-                _rowOfColumn[0] = row;
-                int currentColumn = 0;
+                int nextColumn = FindCheapestColumn(searchingRow, fromColumn, columns, out double extraCost);
+                ShiftPotentials(newRow, extraCost, columns);
+                _isColumnInChain[nextColumn] = true;
 
-                for (int column = 0; column <= columns; column++)
+                int owner = _rowInColumn[nextColumn];
+                if (owner == NONE)
                 {
-                    _minSlack[column] = double.PositiveInfinity;
-                    _usedColumn[column] = false;
+                    MoveChain(newRow, nextColumn);
+                    return;
                 }
 
-                do
-                {
-                    _usedColumn[currentColumn] = true;
-                    int currentRow = _rowOfColumn[currentColumn];
-                    double delta = double.PositiveInfinity;
-                    int nextColumn = 0;
-
-                    for (int column = 1; column <= columns; column++)
-                    {
-                        if (_usedColumn[column]) continue;
-
-                        double slack = _cost[currentRow, column] - _rowPotential[currentRow] - _columnPotential[column];
-                        if (slack < _minSlack[column])
-                        {
-                            _minSlack[column] = slack;
-                            _previousColumn[column] = currentColumn;
-                        }
-
-                        if (_minSlack[column] < delta)
-                        {
-                            delta = _minSlack[column];
-                            nextColumn = column;
-                        }
-                    }
-
-                    for (int column = 0; column <= columns; column++)
-                    {
-                        if (_usedColumn[column])
-                        {
-                            _rowPotential[_rowOfColumn[column]] += delta;
-                            _columnPotential[column] -= delta;
-                        }
-                        else
-                        {
-                            _minSlack[column] -= delta;
-                        }
-                    }
-
-                    currentColumn = nextColumn;
-                } while (_rowOfColumn[currentColumn] != 0);
-
-                do
-                {
-                    int previous = _previousColumn[currentColumn];
-                    _rowOfColumn[currentColumn] = _rowOfColumn[previous];
-                    currentColumn = previous;
-                } while (currentColumn != 0);
+                searchingRow = owner;
+                fromColumn = nextColumn;
             }
         }
 
-        private void EnsureCapacity(int rows, int columns)
+        private int FindCheapestColumn(int searchingRow, int fromColumn, int columns, out double extraCost)
         {
-            if (_cost.GetLength(0) < rows + 1 || _cost.GetLength(1) < columns + 1)
-                _cost = new double[rows + 1, columns + 1];
+            extraCost = double.PositiveInfinity;
+            int cheapestColumn = NONE;
 
-            if (_rowPotential.Length < rows + 1)
-                _rowPotential = new double[rows + 1];
-
-            if (_columnPotential.Length < columns + 1)
+            for (int column = 0; column < columns; column++)
             {
-                _columnPotential = new double[columns + 1];
-                _minSlack = new double[columns + 1];
-                _rowOfColumn = new int[columns + 1];
-                _previousColumn = new int[columns + 1];
-                _usedColumn = new bool[columns + 1];
+                if (_isColumnInChain[column]) continue;
+
+                double reach = ReducedCost(searchingRow, column);
+                if (reach < _cheapestReach[column])
+                {
+                    _cheapestReach[column] = reach;
+                    _reachedFromColumn[column] = fromColumn;
+                }
+
+                if (_cheapestReach[column] < extraCost)
+                {
+                    extraCost = _cheapestReach[column];
+                    cheapestColumn = column;
+                }
             }
+            
+            
+            
+            return cheapestColumn;
+        }
+
+        private void ShiftPotentials(int newRow, double extraCost, int columns)
+        {
+            _rowPotential[newRow] += extraCost;
+
+            for (int column = 0; column < columns; column++)
+            {
+                if (_isColumnInChain[column])
+                {
+                    _rowPotential[_rowInColumn[column]] += extraCost;
+                    _columnPotential[column] -= extraCost;
+                }
+                else
+                {
+                    _cheapestReach[column] -= extraCost;
+                }
+            }
+        }
+
+        private void MoveChain(int newRow, int freeColumn)
+        {
+            int column = freeColumn;
+            while (column != NONE)
+            {
+                int previousColumn = _reachedFromColumn[column];
+                _rowInColumn[column] = previousColumn == NONE ? newRow : _rowInColumn[previousColumn];
+                column = previousColumn;
+            }
+        }
+
+        private double ReducedCost(int row, int column)
+            => _cost[row, column] - _rowPotential[row] - _columnPotential[column];
+
+        private void ResetChain(int columns)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+                _cheapestReach[column] = double.PositiveInfinity;
+                _reachedFromColumn[column] = NONE;
+                _isColumnInChain[column] = false;
+            }
+        }
+
+        private void FillCosts(IReadOnlyList<Vector3> units, IReadOnlyList<Vector3> slots, bool unitsAreRows,
+            int rows, int columns)
+        {
+            for (int row = 0; row < rows; row++)
+            for (int column = 0; column < columns; column++)
+            {
+                int unit = unitsAreRows ? row : column;
+                int slot = unitsAreRows ? column : row;
+                _cost[row, column] = FlatSqrDistance(units[unit], slots[slot]);
+            }
+        }
+
+        private void Prepare(int rows, int columns)
+        {
+            if (_cost.GetLength(0) < rows || _cost.GetLength(1) < columns)
+                _cost = new double[rows, columns];
+
+            if (_rowPotential.Length < rows)
+                _rowPotential = new double[rows];
+
+            if (_columnPotential.Length < columns)
+            {
+                _columnPotential = new double[columns];
+                _rowInColumn = new int[columns];
+                _cheapestReach = new double[columns];
+                _reachedFromColumn = new int[columns];
+                _isColumnInChain = new bool[columns];
+            }
+
+            Array.Clear(_rowPotential, 0, rows);
+            Array.Clear(_columnPotential, 0, columns);
+            for (int column = 0; column < columns; column++)
+                _rowInColumn[column] = NONE;
         }
 
         private static double FlatSqrDistance(Vector3 a, Vector3 b)

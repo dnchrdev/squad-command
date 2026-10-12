@@ -1,4 +1,3 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
@@ -46,7 +45,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
         [Test]
         public void OnUpdate_SlotStillHasAssetPath_IsNotShown()
         {
-            _world.GetStash<AssetPath>().Set(_slot, new AssetPath { Value = "MoveSlotDestination" });
+            _world.GetStash<MoveSlotAssetPath>().Set(_slot, new MoveSlotAssetPath { Value = "MoveSlotDestination" });
             _world.Commit();
 
             _system.OnUpdate(DT);

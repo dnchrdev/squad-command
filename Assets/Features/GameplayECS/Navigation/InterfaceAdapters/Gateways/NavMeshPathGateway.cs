@@ -1,6 +1,6 @@
 ﻿using Features.GameplayECS.Navigation.Systems.Ports;
-using UnityEngine.AI;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Features.GameplayECS.Navigation.InterfaceAdapters.Gateways
 {

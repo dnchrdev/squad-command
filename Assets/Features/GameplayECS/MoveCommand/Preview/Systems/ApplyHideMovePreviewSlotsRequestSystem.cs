@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Features.Core.Infrastructure.Interfaces;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Common;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Components;
@@ -21,12 +20,12 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
 
         private Stash<HideMovePreviewSlotsRequest> _requestStash;
         private Stash<MovePreviewSlotTag> _movePreviewSlotStash;
-        private Stash<AssetPath> _assetPathStash;
-        private Stash<Position> _positionStash;
+        private Stash<MoveSlotAssetPath> _assetPathStash;
+        private Stash<MoveSlotPosition> _positionStash;
         private Stash<MoveSlotViewShowedTag> _moveSlotViewShowedTagStash;
         private Stash<MoveSlotViewComponent> _moveSlotViewComponentStash;
         private Stash<MovePreviewFormation> _movePreviewFormationStash;
-        private Stash<SpawningTag> _spawningTagStash;
+        private Stash<MoveSlotSpawningTag> _spawningTagStash;
 
         private readonly List<Entity> _slotsBuffer = new List<Entity>();
 
@@ -47,9 +46,9 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
             
             _requestStash = World.GetStash<HideMovePreviewSlotsRequest>();
             _movePreviewSlotStash = World.GetStash<MovePreviewSlotTag>();
-            _assetPathStash = World.GetStash<AssetPath>();
-            _positionStash = World.GetStash<Position>();
-            _spawningTagStash = World.GetStash<SpawningTag>();
+            _assetPathStash = World.GetStash<MoveSlotAssetPath>();
+            _positionStash = World.GetStash<MoveSlotPosition>();
+            _spawningTagStash = World.GetStash<MoveSlotSpawningTag>();
             _moveSlotViewShowedTagStash = World.GetStash<MoveSlotViewShowedTag>();
             _moveSlotViewComponentStash = World.GetStash<MoveSlotViewComponent>();
             _movePreviewFormationStash = World.GetStash<MovePreviewFormation>();

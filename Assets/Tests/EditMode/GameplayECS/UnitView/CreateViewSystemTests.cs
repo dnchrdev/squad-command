@@ -1,5 +1,5 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Common.View;
+using Features.GameplayECS.Synchronization.Outputs;
 using Features.GameplayECS.UnitView.Components;
 using Features.GameplayECS.UnitView.Systems;
 using NUnit.Framework;

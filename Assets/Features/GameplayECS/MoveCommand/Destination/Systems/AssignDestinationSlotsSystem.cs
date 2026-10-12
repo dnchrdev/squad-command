@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
+using Features.GameplayECS.Synchronization.Outputs;
 using Scellecs.Morpeh;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
         private Stash<MoveDestinationFormation> _destinationFormationStash;
         private Stash<UnitMoveDestinationSlot> _unitMoveDestinationSlotStash;
         private Stash<Position> _positionStash;
+        private Stash<MoveSlotPosition> _slotPositionStash;
         private Stash<DestinationSlotsAssignedTag> _destinationSlotsAssignedTagStash;
         private Stash<ApplyDestinationFormationTag> _applyDestinationFormationTagStash;
 
@@ -35,6 +37,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
             _destinationFormationStash = World.GetStash<MoveDestinationFormation>();
             _unitMoveDestinationSlotStash = World.GetStash<UnitMoveDestinationSlot>();
             _positionStash = World.GetStash<Position>();
+            _slotPositionStash = World.GetStash<MoveSlotPosition>();
             _destinationSlotsAssignedTagStash = World.GetStash<DestinationSlotsAssignedTag>();
             _applyDestinationFormationTagStash = World.GetStash<ApplyDestinationFormationTag>();
         }
@@ -45,8 +48,8 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
             {
                 ref var destinationFormationComp = ref _destinationFormationStash.Get(destinationFormation);
 
-                CollectWithPositions(destinationFormationComp.Units, _unitsBuffer, _unitPositionsBuffer);
-                CollectWithPositions(destinationFormationComp.Slots, _slotsBuffer, _slotPositionsBuffer);
+                CollectUnitsWithPositions(destinationFormationComp.Units);
+                CollectSlotsWithPositions(destinationFormationComp.Slots);
 
                 _solver.Solve(_unitPositionsBuffer, _slotPositionsBuffer, _slotIndexOfUnitBuffer);
 
@@ -67,17 +70,31 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
             }
         }
 
-        private void CollectWithPositions(List<Entity> source, List<Entity> entities, List<Vector3> positions)
+        private void CollectUnitsWithPositions(List<Entity> units)
         {
-            entities.Clear();
-            positions.Clear();
+            _unitsBuffer.Clear();
+            _unitPositionsBuffer.Clear();
 
-            foreach (var entity in source)
+            foreach (var unit in units)
             {
-                if (!_positionStash.Has(entity)) continue;
+                if (!_positionStash.Has(unit)) continue;
 
-                entities.Add(entity);
-                positions.Add(_positionStash.Get(entity).Value);
+                _unitsBuffer.Add(unit);
+                _unitPositionsBuffer.Add(_positionStash.Get(unit).Value);
+            }
+        }
+
+        private void CollectSlotsWithPositions(List<Entity> slots)
+        {
+            _slotsBuffer.Clear();
+            _slotPositionsBuffer.Clear();
+
+            foreach (var slot in slots)
+            {
+                if (!_slotPositionStash.Has(slot)) continue;
+
+                _slotsBuffer.Add(slot);
+                _slotPositionsBuffer.Add(_slotPositionStash.Get(slot).Value);
             }
         }
 

@@ -1,5 +1,5 @@
-using Scellecs.Morpeh;
 using NUnit.Framework;
+using Scellecs.Morpeh;
 
 namespace Tests.EditMode.TestUtils
 {

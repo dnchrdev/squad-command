@@ -5,6 +5,7 @@ using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Requests;
 using Features.GameplayECS.MoveCommand.Destination.Systems;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
+using Features.GameplayECS.Selection.Outputs;
 using NUnit.Framework;
 using Scellecs.Morpeh;
 using Tests.EditMode.TestUtils;
@@ -22,7 +23,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
         private World _world;
         private ApplyCommitMoveRequestSystem _system;
         private Stash<MoveDestinationFormation> _formationStash;
-        private Stash<Position> _positionStash;
+        private Stash<MoveSlotPosition> _positionStash;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +31,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
             _world = World.Create();
             _system = new ApplyCommitMoveRequestSystem().Init(_world);
             _formationStash = _world.GetStash<MoveDestinationFormation>();
-            _positionStash = _world.GetStash<Position>();
+            _positionStash = _world.GetStash<MoveSlotPosition>();
         }
 
         [TearDown]
@@ -70,7 +71,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
             {
                 positions.Add(_positionStash.Get(slot).Value);
                 Assert.That(_world.GetStash<MoveDestinationSlotTag>().Has(slot), Is.True);
-                Assert.That(_world.GetStash<AssetPath>().Get(slot).Value, Is.EqualTo(DESTINATION_SLOT_ASSET_PATH));
+                Assert.That(_world.GetStash<MoveSlotAssetPath>().Get(slot).Value, Is.EqualTo(DESTINATION_SLOT_ASSET_PATH));
             }
             Assert.That(positions, Is.EquivalentTo(new[] { new Vector3(1f, 0f, 1f), new Vector3(2f, 0f, 2f) }));
         }
@@ -93,7 +94,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
         {
             var unit = CreateSelectedUnit();
             var oldSlot = _world.CreateEntity();
-            _positionStash.Set(oldSlot, new Position { Value = Vector3.zero });
+            _positionStash.Set(oldSlot, new MoveSlotPosition { Value = Vector3.zero });
             var oldFormation = _world.CreateEntity();
             _formationStash.Set(oldFormation, new MoveDestinationFormation
             {
@@ -112,7 +113,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
             Assert.That(_formationStash.Get(oldFormation).Slots, Is.Empty);
             Assert.That(_formationStash.Get(oldFormation).Units, Is.Empty);
             VectorAssert.AreEqual(new Vector3(7f, 0f, 7f), _positionStash.Get(oldSlot).Value);
-            Assert.That(_world.GetStash<AssetPath>().Has(oldSlot), Is.False);
+            Assert.That(_world.GetStash<MoveSlotAssetPath>().Has(oldSlot), Is.False);
         }
 
         [Test]
@@ -151,7 +152,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Destination
         {
             var slot = _world.CreateEntity();
             _world.GetStash<MovePreviewSlotTag>().Set(slot);
-            _positionStash.Set(slot, new Position { Value = position });
+            _positionStash.Set(slot, new MoveSlotPosition { Value = position });
         }
 
         private void SendRequest()

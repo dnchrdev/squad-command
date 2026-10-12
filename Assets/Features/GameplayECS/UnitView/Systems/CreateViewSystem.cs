@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.Synchronization.Outputs;
 using Features.GameplayECS.UnitView.Components;
 using Features.GameplayECS.UnitView.Systems.Ports;
 using Scellecs.Morpeh;

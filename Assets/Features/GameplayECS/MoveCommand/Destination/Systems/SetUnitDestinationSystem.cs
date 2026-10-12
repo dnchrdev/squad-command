@@ -1,4 +1,4 @@
-﻿using Features.GameplayECS.Common.Components;
+﻿using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.Navigation.Requests;
 using Scellecs.Morpeh;
@@ -12,7 +12,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
 
         private Stash<UnitMoveDestinationSlot> _moveDestinationSlotStash;
         private Stash<DestinationRequest> _destinationRequestStash;
-        private Stash<Position> _positionStash;
+        private Stash<MoveSlotPosition> _positionStash;
         private Stash<MoveDestinationFormation> _destinationFormationStash;
         private Stash<ApplyDestinationFormationTag> _applyDestinationSelfRequestStash;
 
@@ -25,7 +25,7 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
                 .Build();
 
             _moveDestinationSlotStash = World.GetStash<UnitMoveDestinationSlot>();
-            _positionStash = World.GetStash<Position>();
+            _positionStash = World.GetStash<MoveSlotPosition>();
             _applyDestinationSelfRequestStash = World.GetStash<ApplyDestinationFormationTag>();
             _destinationRequestStash = World.GetStash<DestinationRequest>();
             _destinationFormationStash = World.GetStash<MoveDestinationFormation>();

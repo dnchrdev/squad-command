@@ -1,4 +1,5 @@
 using Features.GameplayECS.Common.Components;
+using Features.GameplayECS.Physics.Outputs;
 using Features.GameplayECS.Synchronization.Components;
 using Features.GameplayECS.Synchronization.Systems;
 using NUnit.Framework;

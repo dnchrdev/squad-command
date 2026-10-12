@@ -1,7 +1,7 @@
-﻿using Features.GameplayECS.Common.Components;
-using Features.GameplayECS.Navigation.Components;
-using Features.GameplayECS.Navigation.Systems.Ports;
+﻿using Features.GameplayECS.Navigation.Components;
 using Features.GameplayECS.Navigation.Requests;
+using Features.GameplayECS.Navigation.Systems.Ports;
+using Features.GameplayECS.Synchronization.Outputs;
 using Scellecs.Morpeh;
 
 namespace Features.GameplayECS.Navigation.Systems

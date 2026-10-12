@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Common;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Destination.Components;
 using Features.GameplayECS.MoveCommand.Destination.Requests;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
+using Features.GameplayECS.Selection.Outputs;
 using Scellecs.Morpeh;
 using UnityEngine;
 
@@ -23,8 +23,8 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
         private Stash<MoveDestinationFormation> _moveDestinationFormationStash;
         private Stash<MoveDestinationSlotTag> _moveDestinationSlotStash;
         private Stash<UnitMoveDestinationSlot> _unitMoveDestinationSlotStash;
-        private Stash<AssetPath> _assetPathStash;
-        private Stash<Position> _positionStash;
+        private Stash<MoveSlotAssetPath> _assetPathStash;
+        private Stash<MoveSlotPosition> _positionStash;
         private Stash<HideMovePreviewSlotsRequest> _hideMovePreviewSlotsStash;
 
         private readonly Queue<Vector3> _slotsPositionsQueue = new Queue<Vector3>();
@@ -42,13 +42,13 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
 
             _movePreviewSlotFilter = World.Filter.
                 With<MovePreviewSlotTag>().
-                With<Position>().
+                With<MoveSlotPosition>().
                 Build();
             
             _moveDestinationFormationStash = World.GetStash<MoveDestinationFormation>();
             _unitMoveDestinationSlotStash = World.GetStash<UnitMoveDestinationSlot>();
-            _assetPathStash = World.GetStash<AssetPath>();
-            _positionStash = World.GetStash<Position>();
+            _assetPathStash = World.GetStash<MoveSlotAssetPath>();
+            _positionStash = World.GetStash<MoveSlotPosition>();
             _moveDestinationSlotStash = World.GetStash<MoveDestinationSlotTag>();
             _hideMovePreviewSlotsStash = World.GetStash<HideMovePreviewSlotsRequest>();
         }
@@ -107,10 +107,10 @@ namespace Features.GameplayECS.MoveCommand.Destination.Systems
                 {
                     destinationSlot = World.CreateEntity();
 
-                    _assetPathStash.Set(destinationSlot, new AssetPath { Value = MOVE_SLOT_ASSET_PATH });
+                    _assetPathStash.Set(destinationSlot, new MoveSlotAssetPath { Value = MOVE_SLOT_ASSET_PATH });
                 }
                 
-                _positionStash.Set(destinationSlot, new Position { Value = _slotsPositionsQueue.Dequeue()});
+                _positionStash.Set(destinationSlot, new MoveSlotPosition { Value = _slotsPositionsQueue.Dequeue()});
 
                 _moveDestinationSlotStash.Set(destinationSlot);
 

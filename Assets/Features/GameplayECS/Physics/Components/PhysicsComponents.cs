@@ -7,5 +7,4 @@ namespace Features.GameplayECS.Physics.Components
     public struct StaticBodyTag : IComponent { }
     public struct PlayerControlledTag : IComponent { }
     public struct AIControlledTag : IComponent { }
-    public struct PhysicsForce : IComponent { public Vector3 Value; }
 }

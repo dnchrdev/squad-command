@@ -7,7 +7,7 @@ namespace Features.GameplayECS.Movement
     {
         public static void Add(SystemsGroup group)
         {
-            group.AddSystem(new ResetVelocitySystem());
+            group.AddSystem(new ResetDesiredVelocitySystem());
             group.AddSystem(new ApplyMoveSpeedSystem());
         }
     }

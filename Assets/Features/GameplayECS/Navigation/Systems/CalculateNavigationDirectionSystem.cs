@@ -1,5 +1,7 @@
 ﻿using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Navigation.Components;
+using Features.GameplayECS.Navigation.Outputs;
+using Features.GameplayECS.Synchronization.Outputs;
 using Scellecs.Morpeh;
 using UnityEngine;
 

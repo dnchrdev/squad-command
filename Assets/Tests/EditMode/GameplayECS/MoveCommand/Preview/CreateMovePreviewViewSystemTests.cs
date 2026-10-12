@@ -1,4 +1,3 @@
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Systems;
 using Features.GameplayECS.MoveCommand.View;
@@ -30,7 +29,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
 
             _slot = _world.CreateEntity();
             _world.GetStash<MovePreviewSlotTag>().Set(_slot);
-            _world.GetStash<AssetPath>().Set(_slot, new AssetPath { Value = PREVIEW_SLOT_ASSET_PATH });
+            _world.GetStash<MoveSlotAssetPath>().Set(_slot, new MoveSlotAssetPath { Value = PREVIEW_SLOT_ASSET_PATH });
             _world.Commit();
         }
 
@@ -46,7 +45,7 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
             _system.OnUpdate(DT);
 
             Assert.That(_world.GetStash<MoveSlotViewComponent>().Get(_slot).Value, Is.SameAs(pooled));
-            Assert.That(_world.GetStash<AssetPath>().Has(_slot), Is.False);
+            Assert.That(_world.GetStash<MoveSlotAssetPath>().Has(_slot), Is.False);
             Assert.That(_factory.RequestedPaths, Is.Empty);
         }
 
@@ -58,8 +57,8 @@ namespace Tests.EditMode.GameplayECS.MoveCommand.Preview
             Assert.That(_factory.RequestedPaths, Is.EqualTo(new[] { PREVIEW_SLOT_ASSET_PATH }));
             Assert.That(_world.GetStash<MoveSlotViewComponent>().Get(_slot).Value, Is.SameAs(_factory.NextView));
             Assert.That(_factory.NextView.IsVisible, Is.False);
-            Assert.That(_world.GetStash<AssetPath>().Has(_slot), Is.False);
-            Assert.That(_world.GetStash<SpawningTag>().Has(_slot), Is.False);
+            Assert.That(_world.GetStash<MoveSlotAssetPath>().Has(_slot), Is.False);
+            Assert.That(_world.GetStash<MoveSlotSpawningTag>().Has(_slot), Is.False);
         }
 
         [Test]

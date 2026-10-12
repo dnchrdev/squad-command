@@ -1,6 +1,6 @@
 ﻿using System;
-using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Common;
+using Features.GameplayECS.MoveCommand.Components;
 using Features.GameplayECS.MoveCommand.Preview.Components;
 using Features.GameplayECS.MoveCommand.Preview.Requests;
 using Scellecs.Morpeh;
@@ -24,7 +24,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
 
         private Stash<UpdateMovePreviewFormationRequest> _updateMoveFormationRequestStash;
         private Stash<MovePreviewFormation> _movePreviewFormationStash;
-        private Stash<Position> _positionStash;
+        private Stash<MoveSlotPosition> _positionStash;
 
         public void OnAwake()
         {
@@ -38,7 +38,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
 
             _updateMoveFormationRequestStash = World.GetStash<UpdateMovePreviewFormationRequest>();
             _movePreviewFormationStash = World.GetStash<MovePreviewFormation>();
-            _positionStash = World.GetStash<Position>();
+            _positionStash = World.GetStash<MoveSlotPosition>();
         }
 
         public void OnUpdate(float deltaTime)
@@ -71,7 +71,7 @@ namespace Features.GameplayECS.MoveCommand.Preview.Systems
                 for (int i = 0; i < grid.Length; i++)
                 {
                     Entity slot = movePreviewFormation.Slots[i];
-                    _positionStash.Set(slot, new Position { Value = grid[i] + new Vector3(0f, 0.01f, 0f) });
+                    _positionStash.Set(slot, new MoveSlotPosition { Value = grid[i] + new Vector3(0f, 0.01f, 0f) });
                 }
 
                 break;

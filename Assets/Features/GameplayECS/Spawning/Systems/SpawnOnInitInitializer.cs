@@ -1,6 +1,11 @@
 ﻿using Features.GameplayECS.Common.Components;
 using Features.GameplayECS.Movement.Components;
+using Features.GameplayECS.Movement.Outputs;
+using Features.GameplayECS.Navigation.Outputs;
 using Features.GameplayECS.Physics.Components;
+using Features.GameplayECS.Physics.Outputs;
+using Features.GameplayECS.Synchronization.Outputs;
+using Features.GameplayECS.UnitView.Components;
 using Scellecs.Morpeh;
 using UnityEngine;
 
@@ -17,7 +22,7 @@ namespace Features.GameplayECS.Spawning.Systems
         private Stash<Rotation>   _rotationStash;
         private Stash<Velocity>  _velocityStash;    
         private Stash<SteeringDirection> _steeringDirectionStash;
-        private Stash<PhysicsForce> _physicsForceStash;
+        private Stash<DesiredVelocity> _desiredVelocityStash;
         private Stash<CollisionRadius> _collisionRadiusStash;
         private Stash<PlayerControlledTag> _playerControlledStash;
         
@@ -30,7 +35,7 @@ namespace Features.GameplayECS.Spawning.Systems
             _rotationStash = World.GetStash<Rotation>();    
             _velocityStash = World.GetStash<Velocity>();
             _steeringDirectionStash = World.GetStash<SteeringDirection>();
-            _physicsForceStash = World.GetStash<PhysicsForce>();
+            _desiredVelocityStash = World.GetStash<DesiredVelocity>();
             _collisionRadiusStash = World.GetStash<CollisionRadius>();
             _playerControlledStash = World.GetStash<PlayerControlledTag>();
 
@@ -53,7 +58,7 @@ namespace Features.GameplayECS.Spawning.Systems
             _rotationStash.Add(unit, new Rotation {Value = Quaternion.identity});
             _velocityStash.Add(unit, new Velocity {Value = Vector3.zero});
             _steeringDirectionStash.Add(unit, new SteeringDirection {Value = Vector3.zero});
-            _physicsForceStash.Add(unit, new PhysicsForce {Value = Vector3.zero});
+            _desiredVelocityStash.Add(unit, new DesiredVelocity {Value = Vector3.zero});
             _collisionRadiusStash.Add(unit, new CollisionRadius {Value = 0.5f});
             _playerControlledStash.Add(unit);
         }
