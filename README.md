@@ -1,8 +1,9 @@
 # Squad Command
 
-Учебный Unity-проект: игровая логика на ECS (Morpeh), управляющий слой на OOP по Clean Architecture, unit-тесты для обеих частей. Предметная область — управление отрядом в духе RTS: выделение юнитов и приказ на движение строем.
+Учебный Unity-проект: игровая логика на ECS (Morpeh), управляющий слой на OOP по Clean Architecture, unit-тесты для обеих частей. Управление отрядом в духе RTS: выделение юнитов и приказ на движение строем.
 
-![demo](Docs/demo.gif)
+## Демо
+https://github.com/user-attachments/assets/b7d50b8c-4ddb-4b6f-8f7a-82e0bc879af3
 
 ## Цель
 
